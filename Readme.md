@@ -1,7 +1,7 @@
-# CampusOR  
-**Campus Online Queue & Reservation System**
+# UniQ  
+**University Intelligent Queue System**
 
-CampusOR is a smart, scalable virtual queue and reservation system for large campuses such as universities, hospitals, hostels, cafeterias, and administrative offices. It replaces physical queues with a real-time digital experience, reducing congestion and improving service efficiency.
+UniQ is a smart, scalable virtual queue and reservation system for large campuses such as universities, hospitals, hostels, cafeterias, and administrative offices. It replaces physical queues with a real-time digital experience, reducing congestion and improving service efficiency.
 
 ---
 
@@ -23,7 +23,7 @@ CampusOR is a smart, scalable virtual queue and reservation system for large cam
 
 ## Overview
 
-Managing queues in large campuses often leads to long wait times, overcrowding, and inefficiencies. CampusOR introduces a virtual queue ecosystem where users can join queues digitally, track their position in real time, and receive timely notifications—without standing in physical lines.
+Managing queues in large campuses often leads to long wait times, overcrowding, and inefficiencies. UniQ introduces a virtual queue ecosystem where users can join queues digitally, track their position in real time, and receive timely notifications—without standing in physical lines.
 
 The system combines real-time communication, predictive analytics, and role-based dashboards to deliver a seamless queue management experience.
 
@@ -44,7 +44,7 @@ Traditional campus queue systems face:
 
 ## Objectives
 
-CampusOR aims to:
+UniQ aims to:
 
 - Digitize queue and token management  
 - Reduce physical waiting and crowding  
@@ -99,25 +99,59 @@ CampusOR aims to:
 
 ## Technology Stack
 
-- **Frontend:**  Next.js 
+- **Frontend:** Next.js  
 - **Backend:** Node.js, Express  
-- **Database:** MongoDB   
+- **Database:** MongoDB  
 - **Real-Time:** WebSockets, Socket.IO  
 - **ML:** Python (FastAPI)  
-- **Notifications:** WhatsApp, Telegram, Email (which ever is easier to integrate) 
+- **Notifications:** WhatsApp, Telegram, Email  
 - **Deployment:** Docker, Vercel, AWS  
 - **Security:** JWT, RBAC  
 
 ---
 
 ## Folder Structure
+uniq/
+├── frontend/ # Next.js
+├── backend/ # Express + MongoDB API
+├── ml-service/ # FastAPI ML service
+├── shared/ # shared types & schemas
+├── infra/ # Docker & deployment
+└── docs/ # architecture & API docs
 
-```txt
-campusor/
-├── frontend/        # Next.js 
-├── backend/         # Express + MongoDB API
-├── ml-service/      # FastAPI ML service
-├── shared/          # shared types & schemas
-├── infra/           # Docker & deployment
-└── docs/            # architecture & API docs
+---
 
+## Novelty and Uniqueness
+
+- Unified queue system across multiple campus services  
+- Real-time queue tracking using WebSockets  
+- Predictive wait-time estimation using ML  
+- Multi-channel notification system  
+- Offline-first PWA for accessibility  
+- Scalable microservices-ready architecture  
+
+---
+
+## Expected Outcomes
+
+- Reduced physical congestion  
+- Improved service efficiency  
+- Better user experience  
+- Data-driven decision making for admins  
+- Standardized queue management across campus  
+
+---
+
+## Future Enhancements
+
+- AI-based crowd prediction and auto-scaling counters  
+- Voice assistant integration  
+- Face recognition for token validation  
+- Integration with campus ERP systems  
+- Mobile app (Android/iOS)  
+
+---
+
+## Conclusion
+
+UniQ transforms traditional queue management into a modern, efficient, and intelligent system tailored for large campuses. By leveraging real-time technologies and data-driven insights, it ensures smoother operations and a significantly improved user experience.
