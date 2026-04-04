@@ -56,7 +56,7 @@ interface ServerToClientEvents {
 
 interface ClientToServerEvents {
   joinQueue: (
-    data: { queueId: string },
+    data: { queueId: string; userId?: string },
     callback: (response: JoinQueueResponse) => void,
   ) => void;
   subscribeQueue: (data: { queueId: string }) => void;
@@ -79,7 +79,7 @@ export function initializeSocket(httpServer: HttpServer): void {
   console.log("✅ Socket.IO server initialized");
 }
 
-//  CONNECTION HANDLER
+// ─── CONNECTION HANDLER ───────────────────────────────────────────────────────
 
 function handleConnection(
   socket: Socket<ClientToServerEvents, ServerToClientEvents>,
@@ -96,26 +96,29 @@ function handleConnection(
   socket.on("disconnect", () => handleDisconnect(socket));
 }
 
-// EVENT HANDLERS
+// ─── EVENT HANDLERS ───────────────────────────────────────────────────────────
 
 async function handleJoinQueue(
   socket: Socket<ClientToServerEvents, ServerToClientEvents>,
-  data: { queueId: string },
+  data: { queueId: string; userId?: string },
   callback: (response: JoinQueueResponse) => void,
 ): Promise<void> {
   try {
-    const { queueId } = data;
+    const { queueId, userId } = data;
     console.log(`Client ${socket.id} joining queue ${queueId}`);
 
     if (!queueId) {
-      const response: JoinQueueResponse = {
-        success: false,
-        error: "Queue ID is required",
-      };
-      callback(response);
+      callback({ success: false, error: "Queue ID is required" });
       return;
     }
-    const result = await TokenService.generateToken(queueId);
+
+    // FIX: userId is required by Token schema — must be passed from client
+    if (!userId) {
+      callback({ success: false, error: "User ID is required to join a queue" });
+      return;
+    }
+
+    const result = await TokenService.generateToken(queueId, userId);
 
     if (!result.success || !result.token) {
       console.log(`Failed to generate token: ${result.error}`);
@@ -123,31 +126,20 @@ async function handleJoinQueue(
         success: false,
         error: result.error || "Failed to generate token",
       });
-
       socket.emit("error", {
         message: result.error || "Failed to generate token",
       });
       return;
     }
 
-    const response: JoinQueueResponse = {
-      success: true,
-      token: result.token,
-    };
-    callback(response);
+    callback({ success: true, token: result.token });
     socket.emit("tokenGenerated", result.token);
     await broadcastQueueUpdate(queueId);
   } catch (error) {
     console.log(`Error in joinQueue for client ${socket.id}`, error);
-
-    const response: JoinQueueResponse = {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to join queue",
-    };
-    callback(response);
-    socket.emit("error", {
-      message: error instanceof Error ? error.message : "Failed to join queue",
-    });
+    const message = error instanceof Error ? error.message : "Failed to join queue";
+    callback({ success: false, error: message });
+    socket.emit("error", { message });
   }
 }
 
@@ -161,19 +153,18 @@ async function handleSubscribeToQueue(
       socket.emit("error", { message: "queueId is required" });
       return;
     }
+
     const roomName = getRoomName(queueId);
     socket.join(roomName);
-
     console.log(`Client ${socket.id} subscribed to queue ${queueId}`);
 
+    // Send initial snapshot immediately on subscribe
     try {
       const snapshot = await getQueueSnapshot(queueId);
       socket.emit("updateQueue", snapshot);
     } catch (error) {
       console.error(`Error fetching initial queue snapshot:`, error);
-      socket.emit("error", {
-        message: "Failed to fetch queue state",
-      });
+      socket.emit("error", { message: "Failed to fetch queue state" });
     }
   } catch (error) {
     console.log(`Error in subscribeQueue for client ${socket.id}`, error);
@@ -194,8 +185,7 @@ function handleUnsubscribeFromQueue(
       socket.emit("error", { message: "queueId is required" });
       return;
     }
-    const roomName = getRoomName(queueId);
-    socket.leave(roomName);
+    socket.leave(getRoomName(queueId));
     console.log(`Client ${socket.id} unsubscribed from queue ${queueId}`);
   } catch (error) {
     console.log(`Error in unsubscribeQueue for client ${socket.id}`, error);
@@ -214,23 +204,17 @@ function handleDisconnect(
   console.log(`Client disconnected: ${socket.id}`);
 }
 
-//  UTILITY FUNCTIONS
+// ─── UTILITY FUNCTIONS ────────────────────────────────────────────────────────
 
 export async function broadcastQueueUpdate(queueId: string): Promise<void> {
   try {
     const roomName = getRoomName(queueId);
     const snapshot = await getQueueSnapshot(queueId);
-
-    console.log(`Broadcasting queue update for queue ${roomName}`);
-
+    console.log(`Broadcasting queue update for room ${roomName}`);
     io.to(roomName).emit("updateQueue", snapshot);
   } catch (error) {
-    console.error(
-      `Error broadcasting queue update for queue ${queueId}:`,
-      error,
-    );
-    // Don't throw - broadcast failures shouldn't break the main flow
-    // But log the error for monitoring/debugging
+    console.error(`Error broadcasting queue update for queue ${queueId}:`, error);
+    // Don't throw — broadcast failures shouldn't break the main flow
   }
 }
 
@@ -245,21 +229,19 @@ function getRoomName(queueId: string): string {
   return `queue:${queueId}`;
 }
 
-export function getIO(): Server<
-  ClientToServerEvents,
-  ServerToClientEvents
-> | null {
+export function getIO(): Server<ClientToServerEvents, ServerToClientEvents> | null {
   return io || null;
 }
 
-// QUEUE SNAPSHOT HELPER
+// ─── QUEUE SNAPSHOT ───────────────────────────────────────────────────────────
+
 async function getQueueSnapshot(queueId: string): Promise<QueueSnapshot> {
   const queue = await Queue.findById(queueId);
   if (!queue) {
     throw new Error("Queue not found");
   }
-  const capacity = queue.capacity || 50;
 
+  const capacity = queue.capacity || 50;
   const redisWaiting = await getWaitingTokens(queueId);
   const redisNowServing = await getNowServing(queueId);
 
@@ -275,28 +257,29 @@ async function getQueueSnapshot(queueId: string): Promise<QueueSnapshot> {
     const tokenIds = new Set(redisWaiting.map((t) => t.id));
     if (redisNowServing) tokenIds.add(redisNowServing);
 
+    // FIX: Fetch tokens by ID from MongoDB to get accurate current status.
+    // Redis holds the live position, MongoDB holds the source of truth for status.
     const tokens = await Token.find({
       _id: { $in: Array.from(tokenIds) },
       status: { $in: [TokenStatus.WAITING, TokenStatus.SERVED] },
     }).lean();
 
-    // Explicitly fetch recent expired tokens (not in Redis)
+    // Also include recently expired tokens so clients see the transition
     const expiredTokens = await Token.find({
       queue: queueId,
       status: TokenStatus.EXPIRED,
       updatedAt: { $gt: new Date(Date.now() - 30 * 60 * 1000) },
     }).lean();
 
-    const allTokens = [...tokens, ...expiredTokens];
-
-    const tokenMap = new Map(allTokens.map((t) => [t._id.toString(), t]));
+    const tokenMap = new Map(
+      [...tokens, ...expiredTokens].map((t) => [t._id.toString(), t]),
+    );
 
     activeTokens = Array.from(tokenMap.values()).sort(
       (a, b) => a.seq - b.seq,
     ) as typeof activeTokens;
   } else {
-    // Only fetch active tokens (WAITING and SERVED) for efficiency
-    // Also fetch RECENTLY EXPIRED tokens (last 30 mins) so users see the update
+    // Redis unavailable — fall back entirely to MongoDB
     activeTokens = await Token.find({
       queue: queueId,
       $or: [
@@ -311,13 +294,9 @@ async function getQueueSnapshot(queueId: string): Promise<QueueSnapshot> {
       .lean();
   }
 
-  // Calculate stats efficiently
   const stats = {
-    totalWaiting: activeTokens.filter((t) => t.status === TokenStatus.WAITING)
-      .length,
-    totalActive: activeTokens.filter((t) => t.status === TokenStatus.SERVED)
-      .length,
-    // Count completed tokens separately (only count, don't fetch all)
+    totalWaiting: activeTokens.filter((t) => t.status === TokenStatus.WAITING).length,
+    totalActive: activeTokens.filter((t) => t.status === TokenStatus.SERVED).length,
     totalCompleted: await Token.countDocuments({
       queue: queueId,
       status: TokenStatus.COMPLETED,
