@@ -26,7 +26,6 @@ export const initializeRedis = (): void => {
       redisReadyLogged = true;
     }
 
-    // Create subscriber only after main client is ready
     if (!redisSubscriber) {
       redisSubscriber = redisClient!.duplicate();
 
@@ -37,6 +36,9 @@ export const initializeRedis = (): void => {
       redisSubscriber.on("ready", () => {
         console.info("✅ Redis subscriber ready");
       });
+
+      // Duplicate inherits lazyConnect so must connect explicitly
+      redisSubscriber.connect().catch(() => {});
     }
   });
 
@@ -50,10 +52,7 @@ export const initializeRedis = (): void => {
     console.warn("⚠️ Redis connection closed (fallback to MongoDB)");
   });
 
-  // Trigger connection immediately since lazyConnect is true
-  redisClient.connect().catch(() => {
-    // Error already handled by the "error" event listener above
-  });
+  redisClient.connect().catch(() => {});
 };
 
 export const getRedisClient = (): Redis | null => redisClient;

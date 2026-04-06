@@ -1,11 +1,17 @@
 import http from "http";
 import app from "./app.js";
-import dbConnect from "./config/db.js";
+// import dbConnect from "./config/db.js";
 import { env } from "./config/env.js";
-import { initializeSocket } from "./server/socket.js";
-import { initializeRedis, isRedisReady, closeRedis } from "./config/redis.js";
-import { rebuildRedisStateFromMongo } from "./modules/queue/services/redisQueue.service.js";
+// import { initializeSocket } from "./server/socket.js";
+// import { initializeRedis, isRedisReady, closeRedis } from "./config/redis.js";
+// import { rebuildRedisStateFromMongo } from "./modules/queue/services/redisQueue.service.js";
+// import { startTokenExpiryJob } from "./cron/tokenExpiry.job.js";
+
+import dbConnect from "./config/db.js";
+import { closeRedis, initializeRedis, isRedisReady } from "./config/redis.js";
 import { startTokenExpiryJob } from "./cron/tokenExpiry.job.js";
+import { rebuildRedisStateFromMongo } from "./modules/queue/services/redisQueue.service.js";
+import { initializeSocket } from "./server/socket.js";
 
 const waitForRedis = (timeoutMs = 10000): Promise<void> => {
   return new Promise((resolve) => {

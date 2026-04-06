@@ -210,3 +210,24 @@ export const sendBulkEmail = async ({
 }: SendEmailOptions): Promise<SendEmailResult> => {
   return sendEmail({ to, subject, html, text });
 };
+export const sendAdminInviteEmail = async (
+  email: string,
+  inviteLink: string,
+  inviterName: string,
+): Promise<void> => {
+  try {
+    const html = getAdminInviteEmailTemplate(inviteLink, inviterName);
+
+    const result = await sendEmail({
+      to: email,
+      subject: "You've been invited as an Admin - CampusOR",
+      html,
+    });
+
+    if (!result.success) {
+      console.error("Failed to send admin invite email:", result.error);
+    }
+  } catch (error) {
+    console.error("Error sending admin invite email:", error);
+  }
+};

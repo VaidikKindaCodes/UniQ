@@ -6,7 +6,6 @@ import { env } from "./config/env.js";
 
 const app = express();
 
-// This allows your frontend (port 3000) to talk to this backend
 app.use(
   cors({
     origin: env.FRONTEND_URL, // Allow only your frontend
