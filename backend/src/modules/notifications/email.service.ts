@@ -199,6 +199,7 @@ export const sendEmailVerificationOtp = async (
   }
 };
 
+
 /**
  * Send email to multiple recipients
  */

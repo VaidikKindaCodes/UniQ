@@ -17,6 +17,7 @@ import {
   syncQueueFullFlag,
 } from "../queue/services/capacity.service.js";
 import { broadcastQueueUpdate } from "../../server/socket.js";
+import { createNotification } from "../notifications/notification.service.js";  
 
 interface CheckInQueueInput {
   userId: string;
@@ -142,6 +143,15 @@ export const checkInQueue = async ({ userId, queueId }: CheckInQueueInput) => {
       console.error("Failed to send queue joined email:", error);
     },
   );
+
+  await createNotification({
+    userId,
+    queueId: queue._id.toString(),
+    queueName: queue.name,
+    title: "You have joined the queue",
+    message: `You have successfully joined the queue "${queue.name}". Your token number is T-${String(token.seq).padStart(3, "0")}.`,
+    type: "success",
+  });
 
   return {
     message: "Successfully joined the queue",
@@ -394,6 +404,15 @@ export const joinQueueWithToken = async ({
     },
   );
 
+  await createNotification({
+    userId,
+    queueId: queue._id.toString(),
+    queueName: queue.name,
+    title: "You have joined the queue",
+    message: `You have successfully joined the queue "${queue.name}". Your token number is T-${String(token.seq).padStart(3, "0")}.`,
+    type: "info",
+  });
+
   // Count waiting tokens for position
   const waitingCount = await Token.countDocuments({
     queue: queue._id,
@@ -513,6 +532,17 @@ export const leaveCurrentQueue = async ({ userId }: GetUserStatusInput) => {
 
   await syncQueueFullFlag(queueId);
 
+  const queue = await Queue.findById(queueId).lean();
+  await createNotification({
+    userId,
+    queueId,
+    queueName: queue?.name || "Queue",
+    title: "You have left the queue",
+    message: `You have successfully left the queue "${queue?.name || "Unknown"}".`,
+    type: "warning",
+  });
+
+
   return {
     message: "Successfully left the queue",
     queueId,
@@ -544,6 +574,16 @@ export const performCheckIn = async ({ userId }: { userId: string }) => {
   // Broadcast update
   await broadcastQueueUpdate(activeToken.queue.toString());
 
+  const queue = await Queue.findById(activeToken.queue).lean();
+  await createNotification({
+    userId,
+    queueId: activeToken.queue.toString(),
+    queueName: queue?.name || "Queue",
+    title: "You have checked in",
+    message: `You have successfully checked in for your turn in queue "${queue?.name || "Unknown"}". Please wait for the service provider to assist you.`,
+    type: "success",
+  });
+  
   return {
     success: true,
     message: "You have checked in!",

@@ -10,6 +10,7 @@ import {
   enqueueToken,
 } from "../queue/services/redisQueue.service.js";
 import { syncQueueFullFlag } from "../queue/services/capacity.service.js";
+import { createNotification } from "../notifications/notification.service.js";
 
 export interface OperatorResponse {
   success: boolean;
@@ -57,6 +58,16 @@ export class OperatorService {
 
         await removeToken(queueId, currentlyServed._id.toString());
         await setNowServing(queueId, null);
+
+        const  completedQueue = await Queue.findById(queueId).select("name");
+        await createNotification({
+          userId: currentlyServed.userId.toString(),
+          queueId,
+          queueName: completedQueue?.name || "Queue",
+          title: "Your turn is completed",
+          message: `Your turn in queue "${completedQueue?.name || "Unknown"}" is completed. Thank you!`,
+          type: "success",
+        })
       }
 
       // Find the next waiting token with lowest sequence number
@@ -94,6 +105,16 @@ export class OperatorService {
       await setNowServing(queueId, nextToken._id.toString());
 
       await syncQueueFullFlag(queueId);
+
+      const queue = await Queue.findById(queueId).select("name");
+      await createNotification({
+        userId: nextToken.userId.toString(),
+        queueId,
+        queueName: queue?.name || "Queue",
+        title: "Your turn is now",
+        message: `It's your turn in queue "${queue?.name || "Unknown"}". Please proceed to the service point.`,
+        type: "info",
+      });
 
       return {
         success: true,
@@ -141,6 +162,16 @@ export class OperatorService {
 
       await syncQueueFullFlag(queueId);
 
+        const queue = await Queue.findById(queueId).select("name");
+        await createNotification({
+          userId: currentToken.userId.toString(),
+          queueId,
+          queueName: queue?.name || "Queue",
+          title: "Your turn is skipped",
+          message: `Your turn in queue "${queue?.name || "Unknown"}" is skipped. Please wait for the next turn.`,
+          type: "warning",
+        });
+
       return {
         success: true,
         token: {
@@ -186,6 +217,16 @@ export class OperatorService {
       );
 
       await syncQueueFullFlag(queueId);
+      const queue = await Queue.findById(queueId).select("name");
+      await createNotification({
+        userId: skippedToken.userId.toString(),
+        queueId,
+        queueName: queue?.name || "Queue",
+        title: "Your turn is recalled",
+        message: `Your turn in queue "${queue?.name || "Unknown"}" is recalled. Please wait for your turn.`,
+        type: "info",
+      });
+
 
       return {
         success: true,
