@@ -8,13 +8,9 @@ let redisReadyLogged = false;
 
 export const initializeRedis = (): void => {
   if (redisClient) return;
-
-  // 1. Remove lazyConnect so it starts connecting immediately
-  // 2. Ensure the URL is definitely 127.0.0.1
   redisClient = new Redis(env.REDIS_URL, {
     enableReadyCheck: true,
-    maxRetriesPerRequest: null, // Set to null for better stability during startup
-    // lazyConnect: false, // (Default is false, better for startup checks)
+    maxRetriesPerRequest: null, 
     retryStrategy: (times) => {
       console.log(`Retrying Redis connection: attempt ${times}`);
       return Math.min(times * 2000, 30000);
@@ -31,13 +27,11 @@ export const initializeRedis = (): void => {
     
     if (!redisSubscriber) {
       redisSubscriber = redisClient!.duplicate();
-      // Duplicate doesn't need manual .connect() if lazyConnect is false
     }
   });
 
   redisClient.on("error", (error) => {
     redisReady = false;
-    // THIS LOG IS CRUCIAL - check your terminal for this output!
     console.error("❌ Redis Connection Error Details:", error.message);
   });
 };
