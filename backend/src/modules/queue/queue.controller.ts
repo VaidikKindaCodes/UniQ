@@ -12,6 +12,7 @@ import {
   removeToken,
   setNowServing,
 } from "./services/redisQueue.service.js";
+import { getRedisClient } from "../../config/redis.js";
 
 // ─── PREDICTED WAIT TIME ─────────────────────────────────────────────────────
 
@@ -52,6 +53,7 @@ export async function createQueue(req: AuthRequest, res: Response) {
     const { name, location, operator, capacity } = req.body;
     const operatorId = operator || req.user?.sub;
 
+    // 1. Validation
     if (!name || !location) {
       return res.status(400).json({
         success: false,
@@ -66,6 +68,7 @@ export async function createQueue(req: AuthRequest, res: Response) {
       });
     }
 
+    // 2. Check for duplicates in MongoDB
     const existingQueue = await Queue.findOne({ name, location });
     if (existingQueue) {
       return res.status(409).json({
@@ -74,6 +77,7 @@ export async function createQueue(req: AuthRequest, res: Response) {
       });
     }
 
+    // 3. Create in MongoDB
     const queue = await Queue.create({
       name,
       location,
@@ -84,6 +88,28 @@ export async function createQueue(req: AuthRequest, res: Response) {
       isFull: false,
     });
 
+    const redis = getRedisClient();
+    if (redis) {
+      const queueIdStr = queue._id.toString();
+      const redisKey = `queue:${queueIdStr}`;
+      await redis.pipeline()
+        .hset(redisKey, {
+          id: queueIdStr,
+          name: queue.name,
+          location: queue.location,
+          isActive: "true",
+          nextSequence: "1",
+          capacity: queue.capacity?.toString() || "0",
+        })
+        .sadd("active_queues", queueIdStr) 
+        .exec();
+
+      console.log(`📡 Redis sync complete for: ${redisKey}`);
+    } else {
+      console.warn("⚠️ Redis client not available, skipping cache sync");
+    }
+
+    // 5. Success Response
     return res.status(201).json({
       success: true,
       queue: {
@@ -95,9 +121,13 @@ export async function createQueue(req: AuthRequest, res: Response) {
         createdAt: queue.createdAt,
       },
     });
+    
   } catch (error) {
-    console.error("Create Queue Error:", error);
-    return res.status(500).json({ success: false, error: "Failed to create queue" });
+    console.error("❌ Create Queue Error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      error: "Failed to create queue" 
+    });
   }
 }
 

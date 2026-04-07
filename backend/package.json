@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
+    "start": "npx tsx src/server.ts",
     "bootstrapAdmin": "tsx src/scripts/bootstrapAdmin.ts"
   },
   "dependencies": {
@@ -19,6 +19,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.0.2",
     "nodemailer": "^6.10.1",
+    "nodemon": "^3.1.14",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {

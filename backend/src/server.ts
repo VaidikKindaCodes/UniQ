@@ -13,10 +13,13 @@ import { startTokenExpiryJob } from "./cron/tokenExpiry.job.js";
 import { rebuildRedisStateFromMongo } from "./modules/queue/services/redisQueue.service.js";
 import { initializeSocket } from "./server/socket.js";
 
+
 const waitForRedis = (timeoutMs = 10000): Promise<void> => {
   return new Promise((resolve) => {
+    // 1. Check immediately
     if (isRedisReady()) return resolve();
 
+    // 2. Poll every 200ms
     const interval = setInterval(() => {
       if (isRedisReady()) {
         clearInterval(interval);
@@ -24,10 +27,16 @@ const waitForRedis = (timeoutMs = 10000): Promise<void> => {
       }
     }, 200);
 
+    // 3. Absolute cutoff
     setTimeout(() => {
       clearInterval(interval);
-      console.warn("⚠️ Redis not ready after timeout, continuing without it");
-      resolve();
+      if (isRedisReady()) {
+        console.log("redis is ready");
+        resolve(); // Double check one last time before complaining
+      } else {
+        console.warn("⚠️ Redis not ready after timeout, continuing without it");
+        resolve();
+      }
     }, timeoutMs);
   });
 };

@@ -8,51 +8,32 @@ let redisReadyLogged = false;
 
 export const initializeRedis = (): void => {
   if (redisClient) return;
-
   redisClient = new Redis(env.REDIS_URL, {
     enableReadyCheck: true,
-    maxRetriesPerRequest: 1,
-    lazyConnect: true,
+    maxRetriesPerRequest: null, 
     retryStrategy: (times) => {
-      const delay = Math.min(times * 2000, 60000);
-      return delay;
+      console.log(`Retrying Redis connection: attempt ${times}`);
+      return Math.min(times * 2000, 30000);
     },
+  });
+
+  redisClient.on("connect", () => {
+    console.log("📡 Attempting to connect to Redis...");
   });
 
   redisClient.on("ready", () => {
     redisReady = true;
-    if (!redisReadyLogged) {
-      console.info("✅ Redis connected and ready");
-      redisReadyLogged = true;
-    }
-
+    console.info("✅ Redis connected and ready");
+    
     if (!redisSubscriber) {
       redisSubscriber = redisClient!.duplicate();
-
-      redisSubscriber.on("error", (error) => {
-        console.warn("⚠️ Redis subscriber error:", error);
-      });
-
-      redisSubscriber.on("ready", () => {
-        console.info("✅ Redis subscriber ready");
-      });
-
-      // Duplicate inherits lazyConnect so must connect explicitly
-      redisSubscriber.connect().catch(() => {});
     }
   });
 
   redisClient.on("error", (error) => {
     redisReady = false;
-    console.warn("⚠️ Redis error (fallback to MongoDB):", error);
+    console.error("❌ Redis Connection Error Details:", error.message);
   });
-
-  redisClient.on("end", () => {
-    redisReady = false;
-    console.warn("⚠️ Redis connection closed (fallback to MongoDB)");
-  });
-
-  redisClient.connect().catch(() => {});
 };
 
 export const getRedisClient = (): Redis | null => redisClient;
