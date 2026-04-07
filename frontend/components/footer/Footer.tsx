@@ -11,17 +11,16 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-950 border-t border-slate-800">
-      <div className="w-full px-4 py-10">
-        {/* Social Icons */}
-        <div className="flex justify-center gap-6 mb-6">
+    <footer className="bg-slate-50 border-t border-slate-200">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap justify-center gap-4 sm:justify-start">
           {/* GitHub */}
           <a
             href="https://github.com"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub"
-            className="h-10 w-10 flex items-center justify-center rounded-full border border-slate-700 text-[#181717] bg-white hover:bg-slate-100 transition-all duration-300 hover:scale-110"
+            className="h-10 w-10 flex items-center justify-center rounded-full border border-slate-200 bg-white text-[#181717] transition-all duration-300 hover:bg-slate-100 hover:scale-105"
           >
             <FontAwesomeIcon icon={faGithub} className="text-lg" />
           </a>
@@ -71,11 +70,7 @@ const Footer = () => {
           </a>
         </div>
 
-        {/* Divider */}
-        <div className="max-w-5xl mx-auto border-t border-slate-800 mb-4" />
-
-        {/* Copyright */}
-        <div className="text-center text-md text-slate-500 tracking-wide">
+        <div className="text-center text-sm text-slate-500 tracking-wide sm:text-right">
           © {new Date().getFullYear()} CampusOR. All rights reserved.
         </div>
       </div>

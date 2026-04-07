@@ -1,10 +1,53 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  color-scheme: light;
+  --bg-surface: #f8fbff;
+  --bg-surface-soft: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --border-default: rgba(148, 163, 184, 0.24);
+  --brand-start: #085078;
+  --brand-mid: #157490;
+  --brand-end: #85d8ce;
+  --shadow-soft: 0 24px 80px rgba(15, 23, 42, 0.08);
+}
 
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-slate-50 text-slate-900 antialiased;
+  background-image: radial-gradient(circle at top left, rgba(14, 116, 144, 0.12), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(14, 116, 144, 0.14), transparent 25%);
+  background-color: var(--bg-surface);
+}
+
+* {
+  @apply transition-colors duration-200 ease-out;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+  @apply outline-none focus:outline-none;
+}
+
+input,
+select,
+textarea {
+  @apply rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-sm;
+}
+
+::selection {
+  background-color: rgba(14, 116, 144, 0.16);
+  color: #0f172a;
+}
 
 .btn {
-  @apply px-4 py-2 rounded-lg text-sm font-medium border 
-         bg-white hover:bg-gray-100 transition 
-         cursor-pointer shadow-sm;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold text-white bg-sky-600 shadow-lg shadow-sky-500/10 transition-all duration-200 hover:bg-sky-700 hover:-translate-y-0.5;
 }

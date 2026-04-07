@@ -102,7 +102,7 @@ export default function ManageAdminsPage() {
         <AdminSidebar />
 
         {/* Main */}
-        <main className="flex-1 lg:ml-64 xl:ml-72">
+        <main className="flex-1 lg:ml-72">
           <div className="p-4 sm:p-6 lg:p-8 pt-12 space-y-8">
             {/* Header */}
             <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-slate-200">

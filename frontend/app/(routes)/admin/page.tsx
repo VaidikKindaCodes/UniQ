@@ -37,12 +37,12 @@ export default function AdminPage() {
 
   return (
     <ProtectedRoute roles={["admin"]}>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen bg-slate-50">
         {/* Admin Sidebar */}
         <AdminSidebar />
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 xl:ml-72">
+        <main className="flex-1 lg:ml-72">
           <div className="p-4 sm:p-6 lg:p-8">
             {/* Header */}
             <div className="mb-8 sm:mb-10 pt-12 lg:pt-0">
