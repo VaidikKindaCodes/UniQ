@@ -10,7 +10,7 @@ export default function UserDashboardLayout({
 }) {
   return (
     <ProtectedRoute roles={["user"]}>
-      <div className="flex min-h-screen bg-slate-50">
+      <div className="flex min-h-screen" style={{ backgroundColor: 'var(--bg-surface)' }}>
         <UserSidebar />
         <main className="flex-1 lg:ml-72">
           <div className="p-6 lg:p-8">{children}</div>

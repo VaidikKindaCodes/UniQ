@@ -1,8 +1,17 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { apiService } from "@/app/services/api";
 import { toast } from "sonner";
+import { 
+  Plus, 
+  MapPin, 
+  Users, 
+  Terminal,  
+  AlertCircle,
+  Database
+} from "lucide-react";
 
 export default function CreateQueuePage() {
   const router = useRouter();
@@ -16,14 +25,13 @@ export default function CreateQueuePage() {
     setError("");
 
     try {
-      const res = await apiService.post("/queues", formData, true); // true = include auth
+      const res = await apiService.post("/queues", formData, true);
       if (res.success) {
-        toast.success("Queue created successfully.");
+        toast.success("NODE INITIALIZED SUCCESSFULLY");
         router.push("/dashboard/operator/queues");
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to create queue";
+      const message = err instanceof Error ? err.message : "Initialization Failed";
       setError(message);
     } finally {
       setLoading(false);
@@ -31,76 +39,100 @@ export default function CreateQueuePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8 transition-all duration-300 hover:shadow-2xl animate-in fade-in zoom-in">
-        <h1 className="text-2xl font-semibold text-slate-900 mb-6">
-          Create New Queue
-        </h1>
-        {error && (
-          <p className="text-red-500 mb-4 p-3 bg-red-50 rounded-lg border border-red-200">
-            {error}
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center p-6 bg-[#050505] text-white overflow-hidden relative">
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+        style={{ backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`, backgroundSize: '40px 40px' }} 
+      />
+      
+      <div className="max-w-xl w-full relative z-10 border border-white/10 bg-white/2 backdrop-blur-md p-10 sm:p-14">
+
+        <div className="mb-12 space-y-3">
+          <div className="flex items-center gap-3 text-[#00A3C4]">
+            <Database size={18} />
+            <span className="text-[10px] font-black uppercase tracking-[0.5em]">System Registry</span>
+          </div>
+          <h1 className="text-4xl font-black uppercase tracking-tighter italic leading-none">
+            Initialize <span className="text-[#00A3C4]">Node</span>
+          </h1>
+          <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+            Configure parameters for new queue deployment
           </p>
+        </div>
+
+        {error && (
+          <div className="mb-8 border border-red-500/20 bg-red-500/5 p-5 flex items-center gap-4 animate-in fade-in slide-in-from-top-2">
+            <AlertCircle size={18} className="text-red-500 shrink-0" />
+            <p className="text-[10px] font-black uppercase tracking-widest text-red-500">{error}</p>
+          </div>
         )}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Queue Name
+
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+              <Terminal size={12} className="text-[#00A3C4]" /> 
+              Queue Identity
             </label>
             <input
               type="text"
               required
-              className="mt-1 block w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-              placeholder="e.g., Admin Office A"
+              className="w-full bg-white/3 border border-white/10 p-4 text-xs font-mono uppercase tracking-widest focus:border-[#00A3C4]/50 focus:bg-white/5 outline-none transition-all placeholder:text-slate-800"
+              placeholder="e.g. SECTOR_ALPHA_OFFICE"
               value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Location
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+              <MapPin size={12} className="text-[#00A3C4]" /> 
+              Deployment Zone
             </label>
             <input
               type="text"
               required
-              className="mt-1 block w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-              placeholder="e.g., Ground Floor"
+              className="w-full bg-white/3 border border-white/10 p-4 text-xs font-mono uppercase tracking-widest focus:border-[#00A3C4]/50 focus:bg-white/5 outline-none transition-all placeholder:text-slate-800"
+              placeholder="e.g. LEVEL_01_RECEPTION"
               value={formData.location}
-              onChange={(e) =>
-                setFormData({ ...formData, location: e.target.value })
-              }
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-slate-700 mb-2">
-              Capacity
+          <div className="space-y-3">
+            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500">
+              <Users size={12} className="text-[#00A3C4]" /> 
+              Density Threshold
             </label>
-            <input
-              type="number"
-              min={1}
-              className="mt-1 block w-full rounded-lg border border-slate-300 p-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-              placeholder="Maximum tokens allowed"
-              value={formData.capacity}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  capacity: Number(e.target.value),
-                })
-              }
-            />
-            <p className="text-xs text-slate-500 mt-1">
-              Queue will stop accepting joins when waiting tokens reach this number.
+            <div className="relative">
+              <input
+                type="number"
+                min={1}
+                className="w-full bg-white/3 border border-white/10 p-4 text-xs font-mono uppercase tracking-widest focus:border-[#00A3C4]/50 outline-none transition-all"
+                value={formData.capacity}
+                onChange={(e) => setFormData({ ...formData, capacity: Number(e.target.value) })}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[9px] font-mono text-slate-700">OBJ_LIMIT</div>
+            </div>
+            <p className="text-[9px] font-mono text-slate-600 uppercase tracking-tight italic">
+               Auto-lock engaged when waiting sequence reaches limit.
             </p>
           </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-sky-600 hover:bg-sky-700 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group w-full bg-[#00A3C4] hover:bg-cyan-400 text-black py-5 px-6 text-[11px] font-black uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-4 disabled:opacity-30 disabled:grayscale"
           >
-            {loading ? "Creating..." : "Create Queue"}
+            {loading ? "PROCESSING..." : (
+              <>
+                Confirm Deployment <Plus size={16} />
+              </>
+            )}
           </button>
         </form>
+
+        <div className="mt-12 flex justify-between items-center opacity-20">
+          <div className="h-px flex-1 bg-linear-to-r from-transparent to-white/30" />
+          <span className="mx-4 text-[7px] font-mono uppercase tracking-widest">Protocol Version 4.0.1-ELITE</span>
+          <div className="h-px flex-1 bg-linear-to-l from-transparent to-white/30" />
+        </div>
       </div>
     </div>
   );

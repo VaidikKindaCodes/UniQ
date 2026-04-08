@@ -7,10 +7,9 @@ import {
   Activity,
   Clock,
   MapPin,
-  Users,
-  CheckCircle,
   AlertCircle,
   ArrowRight,
+  Zap
 } from "lucide-react";
 import Link from "next/link";
 import { CardSkeleton } from "@/components/skeletons/CardSkeleton";
@@ -40,7 +39,6 @@ export default function UserDashboardPage() {
   useEffect(() => {
     if (!currentQueue) return;
 
-    // Subscribe to WebSocket for real-time updates
     const unsubscribe = subscribeToQueue(currentQueue.queueId, {
       onUpdate: (payload: unknown) => {
         setCurrentQueue((prev) => {
@@ -89,191 +87,187 @@ export default function UserDashboardPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome back! Here&apos;s your queue status.</p>
+          <h1 className="theme-title mb-2 text-3xl font-bold">Dashboard</h1>
+          <p className="theme-text-muted">Welcome back! Here&apos;s your queue status.</p>
         </div>
         <CardSkeleton />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Skeleton className="h-32 rounded-lg" />
-          <Skeleton className="h-32 rounded-lg" />
-          <Skeleton className="h-32 rounded-lg" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <Skeleton className="theme-card h-32 rounded-xl" />
+          <Skeleton className="theme-card h-32 rounded-xl" />
+          <Skeleton className="theme-card h-32 rounded-xl" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-        <p className="text-gray-600">Welcome back! Here&apos;s your queue status.</p>
-      </div>
+    <div className="space-y-12 animate-in fade-in duration-700">
+      {/* --- PAGE HEADER --- */}
+      <header className="relative pb-8 border-b border-white/5">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+          <div>
+            <span className="text-[10px] uppercase tracking-[0.5em] text-[#00A3C4] font-black">Member Overview</span>
+            <h1 className="text-5xl font-bold tracking-tighter uppercase mt-2">
+              System <span className="font-serif italic font-light text-slate-500 lowercase">status.</span>
+            </h1>
+          </div>
+          <p className="text-[11px] font-serif italic text-slate-500 max-w-[200px] leading-relaxed">
+            Real-time synchronization with active campus service points.
+          </p>
+        </div>
+      </header>
 
+      {/* --- ACTIVE QUEUE CARD (The "Uniq" Live Card) --- */}
       {currentQueue ? (
-        /* Active Queue Card */
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-lg border border-blue-200 p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Activity className="w-5 h-5 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700">
-                  Currently In Queue
+        <section className="relative group">
+          {/* Decorative Glow */}
+          <div className="absolute -inset-1 bg-[#00A3C4]/10 blur-2xl rounded-sm opacity-50" />
+
+          <div className="relative bg-white/2 border border-white/10 backdrop-blur-3xl p-8 md:p-12 rounded-sm overflow-hidden">
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#00A3C4]/5 blur-[100px] -z-10" />
+
+            <div className="flex flex-col lg:flex-row justify-between gap-12">
+              {/* Left Side: Metadata */}
+              <div className="flex-1 space-y-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-[#00A3C4] rounded-full animate-pulse" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.3em] text-[#00A3C4]">Live Connection Active</span>
+                </div>
+
+                <div>
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase leading-none">
+                    {currentQueue.queueName}
+                  </h2>
+                  <div className="mt-4 flex items-center gap-3 text-slate-500">
+                    <MapPin size={14} className="text-[#00A3C4]" />
+                    <span className="text-xs uppercase tracking-widest font-bold">{currentQueue.location}</span>
+                  </div>
+                </div>
+
+                {/* Vertical Metrics */}
+                <div className="grid grid-cols-2 gap-px bg-white/5 border border-white/5">
+                  <div className="bg-[#01141a] p-6 text-center">
+                    <p className="text-[9px] uppercase tracking-widest text-slate-500 mb-2 font-bold">Position</p>
+                    <p className="text-3xl font-serif italic">#{currentQueue.currentPosition}</p>
+                  </div>
+                  <div className="bg-[#01141a] p-6 text-center">
+                    <p className="text-[9px] uppercase tracking-widest text-slate-500 mb-2 font-bold">Estimated</p>
+                    <div className="text-3xl font-serif italic text-[#00A3C4]">
+                      {currentQueue.expireAt && currentQueue.status === "served" ? (
+                        <CountdownTimer targetDate={currentQueue.expireAt} />
+                      ) : (
+                        `${currentQueue.estimatedWaitTime}m`
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Side: Token Focus */}
+              <div className="lg:w-72 flex flex-col items-center justify-center border-l border-white/5 lg:pl-12">
+                <p className="text-[10px] uppercase tracking-[0.4em] text-slate-500 font-black mb-4">Identification</p>
+                <div className="text-7xl md:text-8xl font-bold tracking-tighter text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                  {currentQueue.tokenNumber}
+                </div>
+                <div className="mt-8 w-full">
+                  <Link
+                    href="/dashboard/user/myqueue"
+                    className="group/btn relative flex items-center justify-center gap-4 w-full py-5 border border-white/10 hover:border-[#00A3C4] transition-all overflow-hidden"
+                  >
+                    <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.4em] group-hover/btn:text-white transition-colors">Digital Pass</span>
+                    <ArrowRight size={14} className="relative z-10 group-hover/btn:translate-x-1 transition-transform" />
+                    <div className="absolute inset-0 bg-[#00A3C4] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Turn Notification Bar */}
+            {currentQueue.currentPosition <= 3 && currentQueue.status === "waiting" && (
+              <div className="mt-12 p-5 bg-[#00A3C4]/10 border border-[#00A3C4]/20 flex items-center gap-4">
+                <Zap size={16} className="text-[#00A3C4]" />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#00A3C4]">
+                  {currentQueue.currentPosition === 1 ? "Immediate action required: Proceed to desk." : "Your arrival is anticipated shortly."}
                 </span>
               </div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                {currentQueue.queueName}
-              </h2>
-              <div className="flex items-center gap-2 text-sm text-gray-600 mt-1">
-                <MapPin className="w-4 h-4" />
-                <span>{currentQueue.location}</span>
-              </div>
-            </div>
-            <div className="text-center">
-              <div className="text-sm text-gray-600 mb-1">Your Token</div>
-              <div className="text-4xl font-bold text-blue-600 font-mono">
-                {currentQueue.tokenNumber}
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-              <Users className="w-5 h-5 text-gray-400 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-gray-900">
-                #{currentQueue.currentPosition}
-              </div>
-              <div className="text-xs text-gray-600">Position</div>
-            </div>
-            <div className="bg-white rounded-lg p-4 text-center shadow-sm">
-              <Clock className="w-5 h-5 text-gray-400 mx-auto mb-2" />
-              {currentQueue.expireAt && currentQueue.status === "served" ? (
-                <CountdownTimer targetDate={currentQueue.expireAt} />
-              ) : (
-                <div className="text-2xl font-bold text-orange-600">
-                  {currentQueue.estimatedWaitTime}m
-                </div>
-              )}
-              <div className="text-xs text-gray-600">{currentQueue.status === "served" && currentQueue.expireAt ? "Time to Check In" : "Est. Wait"}</div>
-            </div>
-            <div className="bg-white rounded-lg p-4 text-center shadow-sm col-span-2 md:col-span-1">
-              <CheckCircle className="w-5 h-5 text-gray-400 mx-auto mb-2" />
-              <div className="text-sm font-semibold text-gray-900 capitalize">
-                {currentQueue.status}
-              </div>
-              <div className="text-xs text-gray-600">Status</div>
-            </div>
-          </div>
-
-          {currentQueue.currentPosition <= 3 &&
-            currentQueue.status === "waiting" && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-5 h-5 text-yellow-600" />
-                  <span className="text-sm font-medium text-yellow-800">
-                    {currentQueue.currentPosition === 1
-                      ? "You're next! Please proceed to the service area."
-                      : `You're ${currentQueue.currentPosition - 1} ${currentQueue.currentPosition === 2
-                        ? "person"
-                        : "people"
-                      } away!`}
-                  </span>
-                </div>
-              </div>
             )}
-
-          {currentQueue.status === "served" && currentQueue.expireAt && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 text-center">
-              <p className="text-green-800 font-medium mb-3">It&apos;s your turn! Please check in to confirm your presence.</p>
-              <button
-                onClick={async () => {
-                  try {
-                    await apiService.checkIn();
-                    // Reload queue to update state (clear expiry)
-                    await fetchCurrentQueue();
-                  } catch (e) {
-                    console.error(e);
-                  }
-                }}
-                className="bg-green-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-green-700 transition"
-              >
-                Check In Now
-              </button>
-            </div>
-          )}
-
-          <Link
-            href="/dashboard/user/myqueue"
-            className="flex items-center justify-center gap-2 w-full bg-blue-600 text-white rounded-lg py-3 font-medium hover:bg-blue-700 transition-colors"
-          >
-            View Full Details
-            <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
+          </div>
+        </section>
       ) : (
-        /* No Queue - Browse Queues */
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
-          <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
-            Not in a Queue
-          </h2>
-          <p className="text-gray-600 mb-6">
-            Browse and join available queues to get started.
-          </p>
+
+        <section className="relative overflow-hidden border border-white/5 bg-[#01141a] py-32 flex flex-col items-center text-center">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-[#00A3C4]/10 blur-[120px] pointer-events-none" />
+          <div className="relative mb-12">
+            <div className="w-16 h-16 border border-white/10 flex items-center justify-center rotate-45 group">
+              <Activity className="-rotate-45 text-slate-500 group-hover:text-[#00A3C4] transition-colors" size={32} />
+            </div>
+            <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-12 bg-linear-to-b from-white/20 to-transparent mt-4" />
+          </div>
+          <div className="relative z-10 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tighter text-white">
+              No active <span className="font-serif italic font-light text-slate-500 lowercase">sessions.</span>
+            </h2>
+
+            <p className="text-slate-500 text-[10px] uppercase tracking-[0.4em] max-w-xs mx-auto leading-relaxed opacity-80">
+              You are not currently registered in <br /> any virtual queue lines.
+            </p>
+          </div>
           <Link
             href="/dashboard/user/queues"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            className="mt-12 group relative px-12 py-4 bg-white hover:bg-[#00A3C4] transition-colors duration-500"
           >
-            <Activity className="w-5 h-5" />
-            Browse Available Queues
+            <span className="relative z-10 text-black group-hover:text-white text-[10px] font-black uppercase tracking-[0.4em]">
+              Browse Directory
+            </span>
           </Link>
-        </div>
-      )}
+        </section>
+      )
+      }
 
-      {/* Quick Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
+      {/* --- NAVIGATION GRID --- */}
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/5 border border-white/5">
+        <NavCard
           href="/dashboard/user/queues"
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow group"
-        >
-          <Activity className="w-8 h-8 text-blue-600 mb-3" />
-          <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">
-            Browse Queues
-          </h3>
-          <p className="text-sm text-gray-600">
-            Find and join available queues
-          </p>
-        </Link>
-        <Link
+          icon={<Activity size={24} />}
+          title="Directory"
+          desc="Access live service points."
+          color="text-[#00A3C4]"
+        />
+        <NavCard
           href="/dashboard/user/history"
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow group"
-        >
-          <Clock className="w-8 h-8 text-purple-600 mb-3" />
-          <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors">
-            Queue History
-          </h3>
-          <p className="text-sm text-gray-600">
-            View your past queue activities
-          </p>
-        </Link>
-        <Link
+          icon={<Clock size={24} />}
+          title="Archives"
+          desc="Review past interactions."
+          color="text-slate-400"
+        />
+        <NavCard
           href="/dashboard/user/notification"
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow group"
-        >
-          <AlertCircle className="w-8 h-8 text-orange-600 mb-3" />
-          <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-orange-600 transition-colors">
-            Notifications
-          </h3>
-          <p className="text-sm text-gray-600">
-            Check your queue notifications
-          </p>
-        </Link>
-      </div>
-    </div>
+          icon={<AlertCircle size={24} />}
+          title="Alerts"
+          desc="System communications."
+          color="text-slate-400"
+        />
+      </section>
+    </div >
   );
 }
 
-// Helper component for countdown
+function NavCard({ href, icon, title, desc, color }: any) {
+  return (
+    <Link href={href} className="group relative bg-[#01141a] p-8 transition-all hover:bg-white/[0.02]">
+      <div className={`${color} mb-6 transition-transform group-hover:-translate-y-1`}>
+        {icon}
+      </div>
+      <h3 className="text-sm font-black uppercase tracking-[0.2em] mb-2">{title}</h3>
+      <p className="text-[10px] font-serif italic text-slate-600">{desc}</p>
+      <div className="absolute bottom-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity">
+        <ArrowRight size={14} className="text-[#00A3C4]" />
+      </div>
+    </Link>
+  );
+}
+
 function CountdownTimer({ targetDate }: { targetDate: string }) {
   const [timeLeft, setTimeLeft] = useState("");
   const [isExpired, setIsExpired] = useState(false);
@@ -300,7 +294,7 @@ function CountdownTimer({ targetDate }: { targetDate: string }) {
   }, [targetDate]);
 
   return (
-    <div className={`text-2xl font-bold ${isExpired ? "text-red-600" : "text-green-600"}`}>
+    <div className={`text-2xl font-bold ${isExpired ? "text-red-500" : "text-emerald-500"}`}>
       {timeLeft}
     </div>
   );

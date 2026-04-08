@@ -3,16 +3,12 @@
 import { useState, useEffect } from "react";
 import {
   History,
-  Clock,
   MapPin,
-  CheckCircle,
-  XCircle,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
-import { userQueueService } from "../../../../../lib/services/userQueueService";
 import { apiService } from "@/app/services/api";
 
-// Types matching backend schema
 interface QueueHistoryItem {
   queueId: string;
   queueName: string;
@@ -24,7 +20,6 @@ interface QueueHistoryItem {
   status: "completed" | "cancelled";
   waitTimeMinutes: number;
 }
-
 
 export default function HistoryPage() {
   const [historyData, setHistoryData] = useState<QueueHistoryItem[]>([]);
@@ -39,9 +34,7 @@ export default function HistoryPage() {
     try {
       setLoading(true);
       setError(null);
-  
       const response = await apiService.get("/user-status/history", true);
-  
       setHistoryData(response.data);
     } catch (err) {
       console.error("Error fetching queue history:", err);
@@ -51,153 +44,135 @@ export default function HistoryPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
+  const getStatusStyle = (status: string) => {
     switch (status) {
       case "served":
       case "completed":
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return "text-emerald-500 border-emerald-500/20 bg-emerald-500/5";
       case "cancelled":
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return "text-red-500 border-red-500/20 bg-red-500/5";
       default:
-        return <AlertCircle className="w-5 h-5 text-yellow-600" />;
-    }
-  };
-
-  const getStatusBadge = (status: string) => {
-    const baseClasses = "px-3 py-1 rounded-full text-xs font-medium";
-    switch (status) {
-      case "served":
-      case "completed":
-        return `${baseClasses} bg-green-100 text-green-800`;
-      case "cancelled":
-        return `${baseClasses} bg-red-100 text-red-800`;
-      default:
-        return `${baseClasses} bg-yellow-100 text-yellow-800`;
+        return "text-slate-500 border-white/10 bg-white/5";
     }
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    const d = new Date(dateString);
+    return {
+      date: d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).toUpperCase(),
+      time: d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }),
+    };
   };
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-3">
-          <History className="w-6 h-6 text-blue-600" />
-          <h1 className="text-2xl font-bold text-gray-900">Queue History</h1>
-        </div>
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <span className="ml-3 text-gray-600">Loading queue history...</span>
-          </div>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-100 space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-[#00A3C4]" />
+        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-500">Decrypting Archives...</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <History className="w-6 h-6 text-blue-600" />
-        <h1 className="text-2xl font-bold text-gray-900">Queue History</h1>
-      </div>
+    <div className="space-y-12 animate-in fade-in duration-700">
+      {/* --- HEADER --- */}
+      <header className="relative pb-8 border-b border-white/5 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span className="text-[10px] uppercase tracking-[0.5em] text-[#00A3C4] font-black">Member Records</span>
+          <h1 className="text-5xl font-bold tracking-tighter uppercase mt-2">
+            Archive <span className="font-serif italic font-light text-slate-500 lowercase">ledger.</span>
+          </h1>
+        </div>
+      </header>
 
-      {/* Error Message */}
       {error && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-5 h-5 text-yellow-600" />
-            <span className="text-yellow-800">{error}</span>
-          </div>
+        <div className="p-4 border border-red-500/20 bg-red-500/5 text-red-500 text-[10px] uppercase tracking-widest flex items-center gap-3">
+          <AlertCircle size={14} />
+          {error}
         </div>
       )}
 
-      {/* History List */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+    
+      <div className="border border-white/5 bg-white/1 overflow-hidden">
         {historyData.length === 0 ? (
-          <div className="p-8 text-center">
-            <History className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No Queue History
-            </h3>
-            <p className="text-gray-600">
-              You haven't joined any queues yet. Your queue history will appear
-              here once you start using the system.
-            </p>
+          <div className="py-40 flex flex-col items-center text-center">
+            <History size={32} className="text-slate-800 mb-6" />
+            <p className="text-[10px] uppercase tracking-[0.4em] text-slate-600">No historical data recorded.</p>
           </div>
         ) : (
-          <div className="divide-y divide-gray-200">
-            {historyData.map((item) => (
-              <div
-                key={`${item.queueId}-${item.token}-${item.joinedAt}`}
-                className="p-6 hover:bg-gray-50 transition-colors"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {item.queueName}
-                      </h3>
-                      {getStatusIcon(item.status)}
-                      <span className={getStatusBadge(item.status)}>
-                        {item.status.charAt(0).toUpperCase() +
-                          item.status.slice(1)}
+          <>
+            
+            <div className="hidden md:grid grid-cols-12 gap-4 p-6 border-b border-white/10 text-[9px] uppercase tracking-[0.3em] font-black text-slate-500">
+              <div className="col-span-5">Service Point & Location</div>
+              <div className="col-span-2 text-center">Token ID</div>
+              <div className="col-span-3 text-center">Timestamp</div>
+              <div className="col-span-2 text-right">Performance</div>
+            </div>
+
+      
+            <div className="divide-y divide-white/5">
+              {historyData.map((item) => {
+                const joined = formatDate(item.joinedAt);
+                const statusStyle = getStatusStyle(item.status);
+
+                return (
+                  <div
+                    key={`${item.queueId}-${item.token}-${item.joinedAt}`}
+                    className="group grid grid-cols-1 md:grid-cols-12 gap-4 p-8 items-center hover:bg-white/2 transition-colors"
+                  >
+        
+                    <div className="col-span-1 md:col-span-5 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-bold uppercase tracking-tight text-white group-hover:text-[#00A3C4] transition-colors">
+                          {item.queueName}
+                        </h3>
+                        <span className={`text-[8px] uppercase tracking-[0.2em] font-black px-2 py-0.5 border rounded-sm ${statusStyle}`}>
+                          {item.status}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-500">
+                        <MapPin size={10} className="text-[#00A3C4]" />
+                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">{item.location}</span>
+                      </div>
+                    </div>
+
+                    <div className="col-span-1 md:col-span-2 text-left md:text-center">
+                      <span className="md:hidden text-[8px] uppercase tracking-widest text-slate-600 block mb-1">Token ID</span>
+                      <span className="font-mono text-white text-sm bg-white/5 px-3 py-1 border border-white/10 inline-block">
+                        {item.token}
                       </span>
                     </div>
 
-                    <div className="space-y-2 text-sm text-gray-600">
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4" />
-                        <span>{item.location}</span>
+                    <div className="col-span-1 md:col-span-3 text-left md:text-center">
+                      <span className="md:hidden text-[8px] uppercase tracking-widest text-slate-600 block mb-1">Timestamp</span>
+                      <div className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">
+                        {joined.date} <span className="text-slate-600 font-light mx-1">|</span> {joined.time}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-medium text-gray-900">
-                          Token:
-                        </span>
-                        <span className="bg-gray-100 px-2 py-1 rounded font-mono">
-                          {item.token}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
-                        <span>Joined: {formatDate(item.joinedAt)}</span>
-                      </div>
-                      {item.servedAt && (
-                        <div className="flex items-center gap-2">
-                          <CheckCircle className="w-4 h-4 text-green-600" />
-                          <span>Served: {formatDate(item.servedAt)}</span>
-                        </div>
-                      )}
-                      {item.cancelledAt && (
-                        <div className="flex items-center gap-2">
-                          <XCircle className="w-4 h-4 text-red-600" />
-                          <span>Cancelled: {formatDate(item.cancelledAt)}</span>
-                        </div>
-                      )}
                     </div>
-                  </div>
 
-                  <div className="text-right ml-6">
-                    <div className="text-sm text-gray-600 mb-1">Wait Time</div>
-                    <div className="text-2xl font-bold text-blue-600">
-                      {item.waitTimeMinutes}m
+            
+                    <div className="col-span-1 md:col-span-2 text-left md:text-right">
+                      <span className="md:hidden text-[8px] uppercase tracking-widest text-slate-600 block mb-1">Wait Time</span>
+                      <div className="flex flex-col md:items-end">
+                        <div className="text-2xl font-bold tracking-tighter text-[#00A3C4]">
+                          {item.waitTimeMinutes}<span className="text-[10px] ml-1 uppercase font-black tracking-normal italic">m</span>
+                        </div>
+                        <span className="text-[8px] uppercase tracking-widest text-slate-600 font-bold">Total Interval</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </div>
+
+      <footer className="pt-12 flex justify-between items-center opacity-30">
+        <div className="h-px bg-white/10 flex-1 mr-8" />
+        <span className="text-[8px] uppercase tracking-[0.8em] text-slate-500 whitespace-nowrap">End of Records</span>
+        <div className="h-px bg-white/10 flex-1 ml-8" />
+      </footer>
     </div>
   );
 }

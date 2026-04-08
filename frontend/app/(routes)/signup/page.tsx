@@ -5,13 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Footer from "../../../components/footer/Footer";
 import { apiService } from "../../services/api";
-import { useAuth } from "../../context/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { User, ShieldCheck, Mail, Lock, Building, Briefcase, ArrowRight } from "lucide-react";
 
 type UserRole = "user" | "operator";
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export default function SignupPage() {
-  const { login } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,11 +28,11 @@ export default function SignupPage() {
     setError("");
     setInfo("");
 
-    // Client-side validation for role-specific fields
     if (role === "user" && !collegeEmail) {
       setError("College email is required for user role");
       return;
     }
+
     if (role === "operator") {
       if (!department) {
         setError("Department is required for operator role");
@@ -48,8 +47,7 @@ export default function SignupPage() {
     setIsLoading(true);
 
     try {
-      // Prepare request body with role-specific fields
-      const requestBody: any = {
+      const requestBody: Record<string, string> = {
         name,
         email,
         password,
@@ -65,174 +63,179 @@ export default function SignupPage() {
 
       await apiService.post("/auth/register", requestBody, false);
       router.push(`/verify-email?email=${encodeURIComponent(email)}`);
-
-
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Unable to create account.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 scroll-smooth">
-      {/* Landing Page Navbar */}
-      <nav className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur animate-in fade-in slide-in-from-top duration-700 relative">
-        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
-          <div className="flex items-center justify-between relative z-30">
-            <Link href="/landing" className="flex items-center gap-3 group">
-              <img
-                src="/logo/LOGO.svg"
-                alt="CampusOR logo"
-                className="h-11 w-auto object-contain drop-shadow-[0_4px_12px_rgba(15,23,42,0.18)] transition-transform duration-300 group-hover:scale-[1.03] md:h-14"
-              />
+    <main className="min-h-screen bg-[#050505] text-white flex flex-col">
+      
+      <nav className="sticky top-0 z-50 border-b border-white/10 bg-black/60 backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="group">
+            <img
+              src="/logo/LOGO.svg"
+              alt="CampusOR logo"
+              className="h-10 w-auto brightness-200 group-hover:scale-105 transition-transform"
+            />
+          </Link>
+
+          <div className="flex items-center gap-6">
+            <ThemeToggle />
+            <Link
+              href="/login"
+              className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-colors"
+            >
+              Access Portal
             </Link>
-
-            <div className="hidden items-center gap-6 text-sm font-medium text-slate-600 md:flex">
-              <a
-                href="/landing#solution"
-                className="transition-all duration-300 hover:text-slate-900 hover:scale-105"
-              >
-                Solution
-              </a>
-              <a
-                href="/landing#how"
-                className="transition-all duration-300 hover:text-slate-900 hover:scale-105"
-              >
-                How It Works
-              </a>
-              <a
-                href="/landing#features"
-                className="transition-all duration-300 hover:text-slate-900 hover:scale-105"
-              >
-                Features
-              </a>
-            </div>
-
-            <div className="hidden items-center gap-3 text-sm font-medium md:flex">
-              <Link
-                href="/login"
-                className="text-slate-500 transition-all duration-300 hover:text-slate-900 hover:scale-105"
-              >
-                Login
-              </Link>
-              <Link
-                href="/signup"
-                className="rounded-full bg-slate-900 px-4 py-2 text-white transition-all duration-300 hover:bg-slate-800 hover:scale-105 hover:shadow-lg"
-              >
-                Sign Up
-              </Link>
-            </div>
           </div>
         </div>
       </nav>
 
-      {/* Signup Form */}
-      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-8">
+      <div className="flex-1 flex items-center justify-center p-6 relative overflow-hidden">
+        
+
         <form
           onSubmit={handleSignup}
-          className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-xl p-8 transition-all duration-300 hover:shadow-2xl animate-in fade-in zoom-in"
+          className="relative w-full max-w-lg border border-white/10 bg-white/2 p-8 sm:p-12 backdrop-blur-md"
         >
-          <h1 className="text-2xl font-semibold text-slate-900 text-center mb-6">
-            Sign up for CampusOR
-          </h1>
+          <div className="mb-10 space-y-2 text-center">
+            <h1 className="text-3xl font-black uppercase tracking-tighter italic">
+              Create <span className="text-[#00A3C4]">Account</span>
+            </h1>
+            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+              Initialize system access & profile registration
+            </p>
+          </div>
 
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
+            <div className="mb-6 border border-red-500/20 bg-red-500/5 p-4 flex items-center gap-3 animate-shake">
+              <div className="h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-red-500">{error}</p>
             </div>
           )}
-          {info && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm">
-              {info}
+          <div className="grid grid-cols-2 gap-px bg-white/10 border border-white/10 mb-6">
+            <button
+              type="button"
+              onClick={() => setRole("user")}
+              className={`p-4 flex flex-col items-center gap-2 transition-all ${
+                role === "user" ? "bg-[#00A3C4] text-black" : "bg-[#080808] text-slate-500 hover:text-white"
+              }`}
+            >
+              <User size={18} />
+              <span className="text-[10px] font-black uppercase tracking-widest">User</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("operator")}
+              className={`p-4 flex flex-col items-center gap-2 transition-all ${
+                role === "operator" ? "bg-[#00A3C4] text-black" : "bg-[#080808] text-slate-500 hover:text-white"
+              }`}
+            >
+              <ShieldCheck size={18} />
+              <span className="text-[10px] font-black uppercase tracking-widest">Operator</span>
+            </button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="relative group">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-[#00A3C4] transition-colors" size={16} />
+              <input
+                type="text"
+                placeholder="FULL IDENTITY"
+                className="w-full bg-white/3 border border-white/5 px-12 py-4 text-[11px] font-mono tracking-widest uppercase focus:border-[#00A3C4]/50 outline-none transition-all placeholder:text-slate-700"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
             </div>
-          )}
 
-          <input
-            type="text"
-            placeholder="Full Name"
-            className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-
-          <input
-            type="email"
-            placeholder="Email"
-            className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-
-          <select
-            className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-            value={role}
-            onChange={(e) => setRole(e.target.value as UserRole)}
-            required
-          >
-            <option value="user">User</option>
-            <option value="operator">Operator</option>
-          </select>
-
-          {role === "user" && (
-            <input
-              type="email"
-              placeholder="College Email"
-              className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-              value={collegeEmail}
-              onChange={(e) => setCollegeEmail(e.target.value)}
-              required
-            />
-          )}
-
-          {role === "operator" && (
-            <>
+            <div className="relative group">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-[#00A3C4] transition-colors" size={16} />
               <input
-                type="text"
-                placeholder="Department"
-                className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-                value={department}
-                onChange={(e) => setDepartment(e.target.value)}
+                type="email"
+                placeholder="CONTACT EMAIL"
+                className="w-full bg-white/3 border border-white/5 px-12 py-4 text-[11px] font-mono tracking-widest uppercase focus:border-[#00A3C4]/50 outline-none transition-all placeholder:text-slate-700"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </div>
+            {role === "user" ? (
+              <div className="relative group animate-in slide-in-from-left duration-300">
+                <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-[#00A3C4]" size={16} />
+                <input
+                  type="email"
+                  placeholder="COLLEGE EMAIL"
+                  className="w-full bg-[#00A3C4]/5 border border-[#00A3C4]/20 px-12 py-4 text-[11px] font-mono tracking-widest uppercase focus:border-[#00A3C4]/50 outline-none transition-all"
+                  value={collegeEmail}
+                  onChange={(e) => setCollegeEmail(e.target.value)}
+                  required
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in slide-in-from-right duration-300">
+                <div className="relative group">
+                  <Building className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={16} />
+                  <input
+                    type="text"
+                    placeholder="DEPT"
+                    className="w-full bg-white/3 border border-white/5 px-12 py-4 text-[11px] font-mono tracking-widest uppercase focus:border-[#00A3C4]/50 outline-none transition-all"
+                    value={department}
+                    onChange={(e) => setDepartment(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="relative group">
+                  <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={16} />
+                  <input
+                    type="text"
+                    placeholder="POSITION"
+                    className="w-full bg-white/3 border border-white/5 px-12 py-4 text-[11px] font-mono tracking-widest uppercase focus:border-[#00A3C4]/50 outline-none transition-all"
+                    value={position}
+                    onChange={(e) => setPosition(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="relative group">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-[#00A3C4] transition-colors" size={16} />
               <input
-                type="text"
-                placeholder="Position"
-                className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-                value={position}
-                onChange={(e) => setPosition(e.target.value)}
+                type="password"
+                placeholder="SECURE PASSCODE"
+                className="w-full bg-white/3 border border-white/5 px-12 py-4 text-[11px] font-mono tracking-widest uppercase focus:border-[#00A3C4]/50 outline-none transition-all"
+                autoComplete="on"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
               />
-            </>
-          )}
-
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full border border-slate-300 px-4 py-3 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-            autoComplete="on"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+            </div>
+          </div>
 
           <button
             type="submit"
-            className="w-full bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isLoading}
+            className="w-full mt-10 bg-[#00A3C4] text-black py-4 text-[11px] font-black uppercase tracking-[0.4em] hover:bg-cyan-400 transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed group"
           >
-            {isLoading ? "Creating Account..." : "Sign Up"}
+            {isLoading ? "Synchronizing..." : (
+              <>
+                Initialize Account <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
           </button>
 
-          <p className="text-center mt-6 text-sm text-slate-600">
-            Already have an account?{" "}
+          <p className="mt-8 text-center text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+            Existing user?{" "}
             <Link
               href="/login"
-              className="text-sky-600 hover:text-sky-700 font-semibold transition-colors"
+              className="text-[#00A3C4] hover:text-white transition-colors underline underline-offset-4"
             >
-              Login
+              Sign In
             </Link>
           </p>
         </form>
