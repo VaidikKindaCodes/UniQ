@@ -47,31 +47,34 @@ export default function UserSidebar() {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-6 left-6 z-50 p-3 bg-white/5 border border-white/10 backdrop-blur-md rounded-sm lg:hidden text-[#00A3C4]"
+        className="theme-card-elevated fixed top-6 left-6 z-50 rounded-xl p-3 lg:hidden"
       >
         {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-72 bg-[#01141a] border-r border-white/5 transform transition-transform duration-500 ease-in-out ${
+        className={`sidebar-shell fixed inset-y-0 left-0 z-40 w-72 border-r border-white/8 transform transition-transform duration-500 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
         <div className="flex h-full flex-col relative">
-          <div className="absolute top-0 left-0 w-full h-64 bg-[#00A3C4]/5 blur-[80px] pointer-events-none" />
+          <div className="absolute top-0 left-0 h-64 w-full bg-[#ffd88d]/10 blur-[80px] pointer-events-none" />
           <div className="relative z-10 p-8 pt-10">
             <div className="flex items-center justify-between mb-10">
               <Link href="/" className="flex items-center gap-3 group">
-                <div className="w-7 h-7 bg-[#00A3C4] flex items-center justify-center rounded-sm rotate-45 group-hover:rotate-90 transition-transform duration-500">
-                  <span className="font-serif text-[10px] text-white -rotate-45 group-hover:-rotate-90 transition-transform duration-500">Q</span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-white/20 bg-white/10 transition-transform duration-500 group-hover:rotate-6">
+                  <span className="text-xs font-black text-white">U</span>
                 </div>
-                <span className="text-lg font-serif italic tracking-widest uppercase text-white">Uniq</span>
+                <div>
+                  <span className="block text-lg font-semibold uppercase tracking-[0.26em] text-white">UNIQ</span>
+                  <span className="block text-[9px] uppercase tracking-[0.42em] text-[#ffe2b5]/80">Campus Flow</span>
+                </div>
               </Link>
               <ThemeToggle />
             </div>
             
             <div className="space-y-1">
-              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#00A3C4]">Member Portal</p>
-              <p className="text-[10px] font-serif italic text-slate-500 lowercase">Workspace Environment</p>
+              <p className="text-[9px] font-black uppercase tracking-[0.4em] text-[#ffd88d]">Member Portal</p>
+              <p className="text-[10px] text-white/56 uppercase tracking-[0.24em]">Warm queue workspace</p>
             </div>
           </div>
           <nav className="flex-1 px-4 space-y-1 relative z-10">
@@ -82,18 +85,17 @@ export default function UserSidebar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`group flex items-center gap-4 px-6 py-4 transition-all duration-300 relative overflow-hidden ${
+                  className={`group sidebar-nav-link relative flex items-center gap-4 overflow-hidden rounded-2xl px-6 py-4 transition-all duration-300 ${
                     active 
-                      ? "text-[#00A3C4] bg-white/3" 
-                      : "text-slate-400 hover:text-white hover:bg-white/2"
+                      ? "sidebar-nav-link-active"
+                      : ""
                   }`}
                 >
-                  {/* Active Indicator Line */}
                   {active && (
-                    <div className="absolute left-0 top-0 w-0.5 h-full bg-[#00A3C4]" />
+                    <div className="absolute left-0 top-0 h-full w-1 rounded-r-full bg-[#7a2f0d]" />
                   )}
                   
-                  <span className={`transition-colors duration-300 ${active ? "text-[#00A3C4]" : "group-hover:text-[#00A3C4]"}`}>
+                  <span className={`transition-colors duration-300 ${active ? "text-[#7a2f0d]" : "group-hover:text-[#ffd88d]"}`}>
                     {item.icon}
                   </span>
                   
@@ -115,7 +117,7 @@ export default function UserSidebar() {
                 setIsOpen(false);
                 router.push("/login");
               }}
-              className="group flex w-full items-center gap-4 px-6 py-4 text-slate-500 hover:text-red-400 transition-all duration-300 border border-transparent hover:border-red-500/10 hover:bg-red-500/5 rounded-sm"
+              className="sidebar-nav-link group flex w-full items-center gap-4 rounded-2xl border border-transparent px-6 py-4 text-white/68 transition-all duration-300 hover:border-red-300/10 hover:bg-red-500/10 hover:text-red-200"
             >
               <LogOut size={18} />
               <span className="text-[10px] font-black uppercase tracking-[0.3em]">Terminate Session</span>
@@ -125,7 +127,7 @@ export default function UserSidebar() {
       </aside>
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-[#01141a]/80 backdrop-blur-md lg:hidden transition-opacity duration-500"
+          className="fixed inset-0 z-30 bg-[#180902]/70 backdrop-blur-md lg:hidden transition-opacity duration-500"
           onClick={() => setIsOpen(false)}
         />
       )}

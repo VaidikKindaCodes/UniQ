@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AdminSidebar from "@/components/sidebar/AdminSidebar";
 import ProtectedRoute from "../../../components/ProtectedRoute";
-import { error } from "console";
 import { useAuth } from "@/app/context/AuthContext";
 
 type AdminUser = {
@@ -14,7 +13,7 @@ type AdminUser = {
   createdAt: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function ManageAdminsPage() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);
@@ -22,48 +21,39 @@ export default function ManageAdminsPage() {
   const [loading, setLoading] = useState(false);
   const { token } = useAuth();
 
-  const fetchAdmins = async () => {
+  const fetchAdmins = useCallback(async () => {
     const response = await fetch(`${API_URL}/api/admin/admins`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      }
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     const data = await response.json();
-
-    console.log("admin data:", data);
 
     if (!response.ok) {
       throw new Error(data.message || "fetching admin failed");
     }
 
-    const normalizedAdmins: AdminUser[] = data.map((admin: any) => ({
-      id: admin._id,
-      email: admin.email,
-      emailVerified: admin.emailVerified,
-      createdBy: admin.createdByAdmin ?? null,
-      createdAt: admin.createdAt.split("T")[0],
+    const normalizedAdmins: AdminUser[] = data.map((admin: Record<string, unknown>) => ({
+      id: String(admin._id ?? ""),
+      email: String(admin.email ?? ""),
+      emailVerified: Boolean(admin.emailVerified),
+      createdBy: typeof admin.createdByAdmin === "string" ? admin.createdByAdmin : null,
+      createdAt: String(admin.createdAt ?? "").split("T")[0],
     }));
-  
-    setAdmins(normalizedAdmins);  
-  }
+
+    setAdmins(normalizedAdmins);
+  }, [token]);
 
   useEffect(() => {
-    try {
-      console.log("Sucessfully fetched admins");
-    }
-    catch (err) {
+    if (!token) return;
+
+    fetchAdmins().catch((err) => {
       console.error("Error fetching admins:", err);
-    }
-  }, [token]);
-
-  useEffect(() => {
-    if (token) {
-      fetchAdmins();
-    }
-  }, [token]);
+    });
+  }, [fetchAdmins, token]);
 
   const handleCreateAdmin = async () => {
     if (!email) return;
@@ -74,9 +64,9 @@ export default function ManageAdminsPage() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
@@ -87,9 +77,10 @@ export default function ManageAdminsPage() {
 
       alert("Admin invitation sent successfully!");
       setEmail("");
-    } catch (err: any) {
+      await fetchAdmins();
+    } catch (err: unknown) {
       console.error("Invite error:", err);
-      alert(err.message || "Failed to send invitation");
+      alert(err instanceof Error ? err.message : "Failed to send invitation");
     } finally {
       setLoading(false);
     }
@@ -97,31 +88,26 @@ export default function ManageAdminsPage() {
 
   return (
     <ProtectedRoute roles={["admin"]}>
-      <div className="flex min-h-screen bg-slate-50">
-        {/* Sidebar */}
+      <div className="app-shell flex min-h-screen">
         <AdminSidebar />
-
-        {/* Main */}
-        <main className="flex-1 lg:ml-72">
-          <div className="p-4 sm:p-6 lg:p-8 pt-12 space-y-8">
-            {/* Header */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-slate-200">
-              <h1 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">
+        <main className="app-content-shell flex-1 lg:ml-72">
+          <div className="space-y-8 p-4 pt-12 sm:p-6 lg:p-8">
+            <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
+              <h1 className="mb-2 text-3xl font-bold text-slate-900 sm:text-4xl">
                 Manage Admins
               </h1>
-              <p className="text-slate-600 text-sm sm:text-base">
+              <p className="text-sm text-slate-600 sm:text-base">
                 Create and manage administrator access. Public admin signup is
                 disabled.
               </p>
             </div>
 
-            {/* Create Admin */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900 mb-4">
+            <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
+              <h2 className="mb-4 text-xl font-semibold text-slate-900">
                 Invite New Admin
               </h2>
 
-              <div className="flex flex-col sm:flex-row gap-4">
+              <div className="flex flex-col gap-4 sm:flex-row">
                 <input
                   type="email"
                   placeholder="newadmin@college.edu"
@@ -133,40 +119,39 @@ export default function ManageAdminsPage() {
                 <button
                   onClick={handleCreateAdmin}
                   disabled={loading}
-                  className="rounded-xl bg-sky-600 text-white px-6 py-3 font-semibold hover:bg-sky-700 transition disabled:opacity-50"
+                  className="rounded-xl bg-sky-600 px-6 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
                 >
                   {loading ? "Sending..." : "Send Invite"}
                 </button>
               </div>
 
-              <p className="text-xs text-slate-500 mt-3">
+              <p className="mt-3 text-xs text-slate-500">
                 Admins receive an email invite to verify their account.
               </p>
             </div>
 
-            {/* Admin List */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border border-slate-200">
-              <h2 className="text-xl font-semibold text-slate-900 mb-6">
+            <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
+              <h2 className="mb-6 text-xl font-semibold text-slate-900">
                 Existing Admins
               </h2>
 
               <div className="overflow-x-auto">
-                <table className="min-w-full border border-slate-200 rounded-xl overflow-hidden">
+                <table className="min-w-full overflow-hidden rounded-xl border border-slate-200">
                   <thead className="bg-slate-100">
                     <tr>
-                      <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
                         Email
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
                         Status
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
                         Created By
                       </th>
-                      <th className="text-left px-4 py-3 text-sm font-semibold text-slate-700">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
                         Created At
                       </th>
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-700 text-right">
+                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-700">
                         Actions
                       </th>
                     </tr>
@@ -184,31 +169,31 @@ export default function ManageAdminsPage() {
 
                         <td className="px-4 py-3">
                           {admin.emailVerified ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 text-green-700 px-3 py-1 text-xs font-semibold">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                               Verified
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-700 px-3 py-1 text-xs font-semibold">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
                               Pending
                             </span>
                           )}
                         </td>
 
-                        <td className="px-4 py-3 text-slate-600 text-sm">
+                        <td className="px-4 py-3 text-sm text-slate-600">
                           {admin.createdBy ?? "Bootstrap Admin"}
                         </td>
 
-                        <td className="px-4 py-3 text-slate-600 text-sm">
+                        <td className="px-4 py-3 text-sm text-slate-600">
                           {admin.createdAt}
                         </td>
 
                         <td className="px-4 py-3 text-right">
                           <button
                             disabled
-                            className="text-slate-400 cursor-not-allowed text-sm"
+                            className="cursor-not-allowed text-sm text-slate-400"
                             title="Self-role edits disabled"
                           >
-                            —
+                            --
                           </button>
                         </td>
                       </tr>
@@ -217,10 +202,10 @@ export default function ManageAdminsPage() {
                 </table>
               </div>
 
-              <p className="text-xs text-slate-500 mt-4">
-                • Admin role changes and self-edits are intentionally disabled.
+              <p className="mt-4 text-xs text-slate-500">
+                - Admin role changes and self-edits are intentionally disabled.
                 <br />
-                • Bootstrap admin cannot be removed.
+                - Bootstrap admin cannot be removed.
               </p>
             </div>
           </div>

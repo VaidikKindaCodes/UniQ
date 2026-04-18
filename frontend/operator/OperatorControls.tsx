@@ -18,7 +18,7 @@ export default function OperatorControls({
   queueStatus,
 }: Props) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <div className="dashboard-panel rounded-[2rem] p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-slate-800">
           Queue Controls
@@ -38,7 +38,7 @@ export default function OperatorControls({
         {/* Primary Action */}
         <button
           onClick={onServeNext}
-          className="col-span-1 md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl flex items-center justify-center gap-2 font-semibold shadow-sm hover:shadow transition-all group"
+          className="col-span-1 md:col-span-2 flex items-center justify-center gap-2 rounded-[1.4rem] bg-blue-600 p-4 font-semibold text-white shadow-sm transition-all group hover:bg-blue-700 hover:shadow"
         >
           <span className="text-lg">Serve Next</span>
           <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
@@ -47,7 +47,7 @@ export default function OperatorControls({
         {/* Secondary Actions */}
         <button
           onClick={onExtend}
-          className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-1 rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 font-medium text-slate-700 transition-colors hover:bg-slate-100"
         >
           <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <span className="text-sm">Extend Timer</span>
@@ -55,7 +55,7 @@ export default function OperatorControls({
 
         <button
           onClick={onRecall}
-          className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-1 rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 font-medium text-slate-700 transition-colors hover:bg-slate-100"
         >
           <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
           <span className="text-sm">Recall User</span>
@@ -63,7 +63,7 @@ export default function OperatorControls({
 
         <button
           onClick={onSkip}
-          className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-1 rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 font-medium text-slate-700 transition-colors hover:bg-slate-100"
         >
           <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
           <span className="text-sm">Skip</span>
@@ -71,7 +71,7 @@ export default function OperatorControls({
 
         <button
           onClick={onNoShow}
-          className="bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-200 hover:border-red-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-1 rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4 font-medium text-slate-700 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-700"
         >
           <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           <span className="text-sm">Mark No-Show</span>

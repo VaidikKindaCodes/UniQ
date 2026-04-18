@@ -58,17 +58,17 @@ export default function QueueList() {
 
   return (
     <div className="space-y-10 animate-in fade-in duration-700">
-      <header className="relative border border-white/10 bg-white/2 p-8 sm:p-10">
+      <header className="dashboard-panel-dark relative rounded-[2rem] p-8 sm:p-10">
         <div className="flex flex-col xl:flex-row justify-between gap-10">
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="h-2 w-2 bg-[#00A3C4] shadow-[0_0_10px_#00A3C4]" />
-              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#00A3C4]">System Live</span>
+              <div className="h-2 w-2 bg-[#ffd88d] shadow-[0_0_10px_#ffd88d]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">System Live</span>
             </div>
             <h1 className="text-5xl font-bold tracking-tighter uppercase text-white">
-              Queue <span className="font-serif italic font-light text-slate-500 lowercase">directory.</span>
+              Queue <span className="font-serif italic font-light text-[#ffe2b5]/70 lowercase">directory.</span>
             </h1>
-            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+            <p className="text-[10px] font-mono uppercase tracking-widest text-[#ffe2b5]/58">
               Showing {filteredAndSortedQueues.length} active sectors
             </p>
           </div>
@@ -117,7 +117,7 @@ export default function QueueList() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="border border-white/5 p-8 bg-white/1">
+              <div key={i} className="dashboard-panel-dark rounded-[2rem] p-8">
                 <CardSkeleton />
               </div>
             ))}
@@ -138,8 +138,8 @@ export default function QueueList() {
             ))}
           </div>
         ) : (
-          <div className="py-32 border border-white/5 bg-white/1 text-center">
-            <p className="text-slate-500 font-mono text-[10px] uppercase tracking-[0.5em]">
+          <div className="dashboard-panel-dark rounded-[2rem] py-32 text-center">
+            <p className="font-mono text-[10px] uppercase tracking-[0.5em] text-[#ffe2b5]/58">
               Zero results found for the current filter parameters.
             </p>
           </div>
@@ -155,13 +155,13 @@ export default function QueueList() {
 
 function FilterGroup({ label, children, icon }: { label: string; children: React.ReactNode; icon: React.ReactNode }) {
   return (
-    <div className="relative border-l border-white/10 pl-5 group hover:border-[#00A3C4]/50 transition-colors">
-      <p className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">
+    <div className="group relative border-l border-white/10 pl-5 transition-colors hover:border-[#ffd88d]/50">
+      <p className="mb-2 flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.2em] text-[#ffe2b5]/54">
         {icon} {label}
       </p>
       <div className="relative">
         {children}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 pointer-events-none text-slate-600">
+        <div className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#ffe2b5]/42">
           <ChevronDown size={14} />
         </div>
       </div>

@@ -6,7 +6,7 @@ type Token = {
 
 export default function TokenList({ tokens }: { tokens: Token[] }) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 transition-all duration-300 hover:shadow-xl">
+    <div className="dashboard-panel rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-slate-900">
           Upcoming Tokens

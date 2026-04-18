@@ -9,7 +9,7 @@ import { syncQueueFullFlag } from "../modules/queue/services/capacity.service.js
 const EXPIRY_CHECK_INTERVAL_MS = 30 * 1000;
 
 export const startTokenExpiryJob = () => {
-  console.log("⏰ Starting Token Expiry Job...");
+  console.log("Starting Token Expiry Job...");
 
   setInterval(async () => {
     try {
@@ -22,7 +22,7 @@ export const startTokenExpiryJob = () => {
 
       if (expiredTokens.length === 0) return;
 
-      console.log(`⏰ Found ${expiredTokens.length} expired tokens. Processing...`);
+      console.log(` Found ${expiredTokens.length} expired tokens. Processing...`);
 
       // Track which queues were affected so we only broadcast once per queue
       const affectedQueues = new Set<string>();

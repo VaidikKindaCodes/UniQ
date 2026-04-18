@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { apiService } from "@/app/services/api";
 import { useRouter } from "next/navigation";
 import {
@@ -45,7 +45,7 @@ export default function BrowseQueuesPage() {
       const filtered = queues.filter(
         (q) =>
           q.queueName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          q.location.toLowerCase().includes(searchTerm.toLowerCase())
+          q.location.toLowerCase().includes(searchTerm.toLowerCase()),
       );
       setFilteredQueues(filtered);
     }
@@ -68,7 +68,7 @@ export default function BrowseQueuesPage() {
 
   const handleJoinQueue = async (queueId: string, queueName: string) => {
     const confirmed = window.confirm(
-      `Do you want to join "${queueName}"? You will receive a token and be added to the queue.`
+      `Do you want to join "${queueName}"? You will receive a token and be added to the queue.`,
     );
 
     if (!confirmed) return;
@@ -78,7 +78,7 @@ export default function BrowseQueuesPage() {
       const response = await apiService.post(
         "/user-status/join-queue",
         { queueId },
-        true
+        true,
       );
 
       if (response.success) {
@@ -90,7 +90,7 @@ export default function BrowseQueuesPage() {
       toast.error(
         err instanceof Error
           ? err.message
-          : "Failed to join queue. You may already be in a queue."
+          : "Failed to join queue. You may already be in a queue.",
       );
     } finally {
       setJoiningQueue(null);
@@ -101,19 +101,19 @@ export default function BrowseQueuesPage() {
     switch (status) {
       case "open":
         return (
-          <span className="rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-300">
+          <span className="rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 dark:bg-green-500/15 dark:text-green-300">
             Open
           </span>
         );
       case "paused":
         return (
-          <span className="rounded-full bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+          <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
             Paused
           </span>
         );
       case "full":
         return (
-          <span className="rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-700 dark:bg-red-500/15 dark:text-red-300">
+          <span className="rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-700 dark:bg-red-500/15 dark:text-red-300">
             Full
           </span>
         );
@@ -124,39 +124,52 @@ export default function BrowseQueuesPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-100 space-y-4">
-        <Loader2 className="h-8 w-8 animate-spin text-[#00A3C4]" />
-        <p className="text-[10px] uppercase tracking-[0.4em] text-slate-500">Synchronizing Directory...</p>
+      <div className="flex min-h-100 flex-col items-center justify-center space-y-4">
+        <Loader2 className="h-8 w-8 animate-spin text-[#ffd88d]" />
+        <p className="text-[10px] uppercase tracking-[0.4em] text-[#ffe2b5]/68">
+          Synchronizing Directory...
+        </p>
       </div>
     );
   }
 
   return (
     <div className="space-y-12 animate-in fade-in duration-700">
-      <header className="relative pb-8 border-b border-white/5 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <header className="relative flex flex-col justify-between gap-6 border-b border-white/8 pb-8 md:flex-row md:items-end">
         <div>
-          <span className="text-[10px] uppercase tracking-[0.5em] text-[#00A3C4] font-black">Live Directory</span>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase mt-2">
-            Service <span className="font-serif italic font-light text-slate-500 lowercase">points.</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">
+            Live Directory
+          </span>
+          <h1 className="mt-2 text-5xl font-bold uppercase tracking-tighter text-white">
+            Service{" "}
+            <span className="font-serif font-light italic lowercase text-[#ffe2b5]/70">
+              points.
+            </span>
           </h1>
         </div>
-        
+
         <div className="flex items-center gap-4">
-           <button
+          <button
             onClick={fetchQueues}
-            className="group p-3 border border-white/10 hover:border-[#00A3C4] transition-colors rounded-sm"
+            className="group rounded-xl border border-white/12 bg-white/8 p-3 transition-colors hover:border-[#ffd88d]/40 hover:bg-white/12"
           >
-            <RefreshCw size={16} className="text-slate-500 group-hover:text-[#00A3C4] transition-all" />
+            <RefreshCw
+              size={16}
+              className="text-[#ffe2b5]/70 transition-all group-hover:text-[#ffd88d]"
+            />
           </button>
-          
+
           <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600" size={14} />
+            <Search
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-[#ffe2b5]/55"
+              size={14}
+            />
             <input
               type="text"
               placeholder="SEARCH BY LOCATION..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/3 border border-white/10 py-3 pl-12 pr-4 text-[10px] tracking-widest uppercase outline-none focus:border-[#00A3C4] transition-all"
+              className="w-full rounded-full border border-white/10 bg-[#3c1605]/90 py-3 pl-12 pr-4 text-[10px] tracking-widest uppercase text-[#ffe9c7] outline-none transition-all placeholder:text-[#e4bf87] focus:border-[#ffd88d]"
             />
           </div>
         </div>
@@ -164,56 +177,72 @@ export default function BrowseQueuesPage() {
 
       {error && (
         <div className="flex items-center gap-3 rounded-2xl border border-red-300/30 bg-red-500/10 p-4">
-          <AlertCircle className="h-5 w-5 shrink-0 text-red-500" />
+          <AlertCircle className="h-5 w-5 shrink-0 text-red-300" />
           <div>
-            <p className="text-sm font-medium text-red-200">Error loading queues</p>
-            <p className="text-sm text-red-300">{error}</p>
+            <p className="text-sm font-medium text-red-100">Error loading queues</p>
+            <p className="text-sm text-red-200">{error}</p>
           </div>
         </div>
       )}
 
       {filteredQueues.length === 0 ? (
-        <div className="py-32 border border-white/5 bg-white/1 text-center">
-          <p className="text-[10px] uppercase tracking-[0.4em] text-slate-500">No matching service points found.</p>
+        <div className="dashboard-panel-dark rounded-[2rem] py-32 text-center">
+          <p className="text-[10px] uppercase tracking-[0.4em] text-[#ffe2b5]/64">
+            No matching service points found.
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-white/5 border border-white/5">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {filteredQueues.map((queue) => (
             <div
               key={queue.queueId}
-              className="group relative bg-[#01141a] p-8 hover:bg-white/2 transition-all duration-500 overflow-hidden"
+              className="dashboard-panel-dark group relative overflow-hidden rounded-[2rem] p-8 transition-all duration-500 hover:-translate-y-1"
             >
-              <div className="flex justify-between items-start mb-10">
+              <div className="absolute right-0 top-0 h-40 w-40 bg-[#ffd88d]/6 blur-[90px]" />
+
+              <div className="mb-10 flex items-start justify-between">
                 <div className="space-y-1">
                   {getStatusBadge(queue.status)}
-                  <h3 className="text-xl font-bold uppercase tracking-tight text-white group-hover:text-[#00A3C4] transition-colors pt-3">
+                  <h3 className="pt-3 text-xl font-bold uppercase tracking-tight text-white transition-colors group-hover:text-[#ffd88d]">
                     {queue.queueName}
                   </h3>
-                  <div className="flex items-center gap-2 text-slate-500">
-                    <MapPin size={12} className="text-[#00A3C4]" />
-                    <span className="text-[9px] font-black uppercase tracking-widest">{queue.location}</span>
+                  <div className="flex items-center gap-2 text-[#ffe2b5]/68">
+                    <MapPin size={12} className="text-[#ffd88d]" />
+                    <span className="text-[9px] font-black uppercase tracking-widest">
+                      {queue.location}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-px bg-white/5 border border-white/5 mb-8">
-                <div className="bg-[#01141a] p-4">
-                   <p className="text-[8px] uppercase tracking-widest text-slate-600 mb-1 font-bold">Capacity</p>
-                   <p className="text-sm font-serif italic text-white">{queue.queueLength} <span className="text-slate-600">/</span> {queue.capacity ?? "∞"}</p>
+              <div className="mb-8 grid grid-cols-2 gap-px rounded-[1.4rem] border border-white/8 bg-white/8">
+                <div className="rounded-l-[1.4rem] bg-[#2a1306] p-4">
+                  <p className="mb-1 text-[8px] font-bold uppercase tracking-widest text-[#ffe2b5]/56">
+                    Capacity
+                  </p>
+                  <p className="text-sm font-serif italic text-white">
+                    {queue.queueLength}{" "}
+                    <span className="text-[#ffe2b5]/38">/</span>{" "}
+                    {queue.capacity ?? "∞"}
+                  </p>
                 </div>
-                <div className="bg-[#01141a] p-4">
-                   <p className="text-[8px] uppercase tracking-widest text-slate-600 mb-1 font-bold">Est. Wait</p>
-                   <p className="text-sm font-serif italic text-[#00A3C4]">~{queue.waitTime}m</p>
+                <div className="rounded-r-[1.4rem] bg-[#2a1306] p-4">
+                  <p className="mb-1 text-[8px] font-bold uppercase tracking-widest text-[#ffe2b5]/56">
+                    Est. Wait
+                  </p>
+                  <p className="text-sm font-serif italic text-[#ffd88d]">
+                    ~{queue.waitTime}m
+                  </p>
                 </div>
               </div>
 
               <button
                 onClick={() => handleJoinQueue(queue.queueId, queue.queueName)}
                 disabled={queue.status !== "open" || joiningQueue === queue.queueId}
-                className={`relative w-full py-4 text-[10px] font-black uppercase tracking-[0.4em] transition-all overflow-hidden border ${
-                  queue.status === "open" 
-                  ? "border-white/10 hover:border-[#00A3C4] text-white" 
-                  : "border-transparent text-slate-700 bg-white/2 cursor-not-allowed"
+                className={`relative w-full overflow-hidden rounded-full border py-4 text-[10px] font-black uppercase tracking-[0.4em] transition-all ${
+                  queue.status === "open"
+                    ? "border-white/10 text-white hover:border-[#ffd88d]"
+                    : "cursor-not-allowed border-transparent bg-white/6 text-[#ffe2b5]/38"
                 }`}
               >
                 <div className="relative z-10 flex items-center justify-center gap-3">
@@ -227,11 +256,12 @@ export default function BrowseQueuesPage() {
                   )}
                 </div>
                 {queue.status === "open" && (
-                  <div className="absolute inset-0 bg-[#00A3C4] translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <div className="absolute inset-0 translate-y-full bg-[#7a2f0d] transition-transform duration-300 group-hover:translate-y-0" />
                 )}
               </button>
+
               {(queue.status === "full" || queue.isFull) && (
-                <p className="mt-2 text-xs text-red-400">
+                <p className="mt-3 text-xs text-red-300">
                   This queue is currently at capacity. Please try again later.
                 </p>
               )}

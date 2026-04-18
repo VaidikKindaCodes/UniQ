@@ -37,16 +37,13 @@ export default function AdminPage() {
 
   return (
     <ProtectedRoute roles={["admin"]}>
-      <div className="flex min-h-screen bg-slate-50">
-        {/* Admin Sidebar */}
+      <div className="app-shell flex min-h-screen">
         <AdminSidebar />
 
-        {/* Main Content */}
-        <main className="flex-1 lg:ml-72">
+        <main className="app-content-shell flex-1 lg:ml-72">
           <div className="p-4 sm:p-6 lg:p-8">
-            {/* Header */}
             <div className="mb-8 sm:mb-10 pt-12 lg:pt-0">
-              <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 border-slate-200">
+              <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-2">
                   Admin Analytics Dashboard
                 </h1>
@@ -59,7 +56,7 @@ export default function AdminPage() {
 
           {/* Stats Grid */}
           {loading ? (
-            <div className="bg-sky-600 p-6 sm:p-8">
+            <div className="dashboard-panel-dark rounded-[2rem] p-6 sm:p-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
                 {[...Array(5)].map((_, i) => (
                   <StatSkeleton key={i} />
@@ -98,7 +95,7 @@ export default function AdminPage() {
               </div>
             </div>
           ) : summary ? (
-            <div className="bg-sky-600 p-6 sm:p-8">
+            <div className="dashboard-panel-dark rounded-[2rem] p-6 sm:p-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
                 <StatCard
                   title="Active Tokens"
@@ -129,16 +126,16 @@ export default function AdminPage() {
 
               {/* Charts Grid */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
+                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
                   <QueueLoadChart />
                 </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
+                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
                   <WaitTimeChart />
                 </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
+                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
                   <TokensServedChart />
                 </div>
-                <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
+                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
                   <ServiceEfficiencyChart />
                 </div>
               </div>

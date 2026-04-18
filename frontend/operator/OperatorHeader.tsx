@@ -10,7 +10,7 @@ type Props = {
 
 export default function OperatorHeader({ queue, status }: Props) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col sm:flex-row justify-between items-center transition-all duration-300 hover:shadow-xl">
+    <div className="dashboard-panel flex flex-col items-center justify-between rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1 sm:flex-row">
       <div className="mb-4 sm:mb-0">
         <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 mb-1">
           {queue.name}

@@ -4,7 +4,7 @@ type Props = {
 
 export default function NowServingCard({ token }: Props) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 text-center transition-all duration-300 hover:shadow-xl animate-in fade-in zoom-in">
+    <div className="dashboard-panel rounded-[2rem] p-6 text-center transition-all duration-300 hover:-translate-y-1 animate-in fade-in zoom-in md:p-8">
       <div className="flex items-center justify-center mb-4">
         <div className="bg-orange-100 rounded-full p-3">
           <svg

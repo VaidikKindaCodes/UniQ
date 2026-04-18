@@ -3,14 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { toastBus } from "@/app/utils/toastBus";
-import {
-  User,
-  Mail,
-  Bell,
-  ArrowRight,
-  Lock,
-  Globe,
-} from "lucide-react";
+import { User, Mail, Bell, ArrowRight, Lock, Globe } from "lucide-react";
 import Link from "next/link";
 
 export default function UserSettingsPage() {
@@ -20,7 +13,6 @@ export default function UserSettingsPage() {
   const [email, setEmail] = useState("");
   const [collegeEmail, setCollegeEmail] = useState("");
   const [department, setDepartment] = useState("");
-  const [position, setPosition] = useState("");
   const [receiveNotifications, setReceiveNotifications] = useState(true);
   const [receiveEmailAlerts, setReceiveEmailAlerts] = useState(true);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -35,7 +27,6 @@ export default function UserSettingsPage() {
     setEmail(user.email || "");
     setCollegeEmail(user.collegeEmail || "");
     setDepartment(user.department || "");
-    setPosition(user.position || "");
   }, [user]);
 
   const handleSaveProfile = async () => {
@@ -70,76 +61,80 @@ export default function UserSettingsPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 animate-in fade-in duration-700">
-      <header className="relative pb-8 border-b border-white/5 flex flex-col md:flex-row md:items-end justify-between gap-6">
+    <div className="mx-auto max-w-6xl space-y-12 animate-in fade-in duration-700">
+      <header className="relative flex flex-col justify-between gap-6 border-b border-white/8 pb-8 md:flex-row md:items-end">
         <div>
-          <span className="text-[10px] uppercase tracking-[0.5em] text-[#00A3C4] font-black">Admin Config</span>
-          <h1 className="text-5xl font-bold tracking-tighter uppercase mt-2">
-            Profile <span className="font-serif italic font-light text-slate-500 lowercase">settings.</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">
+            Account Config
+          </span>
+          <h1 className="mt-2 text-5xl font-bold uppercase tracking-tighter text-white">
+            Profile{" "}
+            <span className="font-serif font-light italic lowercase text-[#ffe2b5]/70">
+              settings.
+            </span>
           </h1>
         </div>
         <Link
           href="/dashboard/user/notification"
-          className="group flex items-center gap-3 px-6 py-3 bg-white/5 border border-white/10 hover:border-[#00A3C4]/50 transition-all rounded-sm"
+          className="group flex items-center gap-3 rounded-full border border-white/10 bg-white/8 px-6 py-3 transition-all hover:border-[#ffd88d]/40 hover:bg-white/12"
         >
-          <Bell className="h-4 w-4 text-[#00A3C4]" />
-          <span className="text-[10px] uppercase tracking-widest font-bold text-white">Transmission Prefs</span>
-          <ArrowRight className="h-4 w-4 text-slate-500 group-hover:translate-x-1 transition-transform" />
+          <Bell className="h-4 w-4 text-[#ffd88d]" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-white">
+            Transmission Prefs
+          </span>
+          <ArrowRight className="h-4 w-4 text-[#ffe2b5]/60 transition-transform group-hover:translate-x-1" />
         </Link>
       </header>
 
       <div className="grid gap-12 xl:grid-cols-[1fr_380px]">
         <div className="space-y-20">
-          
           <section className="space-y-10">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 flex items-center justify-center border border-[#00A3C4]/20 bg-[#00A3C4]/5 text-[#00A3C4]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ffd88d]/20 bg-[#ffd88d]/10 text-[#ffd88d]">
                 <User size={18} />
               </div>
-              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white">Identity Registry</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white">
+                Identity Registry
+              </h2>
             </div>
 
             <div className="grid gap-x-10 gap-y-8 sm:grid-cols-2">
-              <div className="space-y-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Full Name</p>
+              <Field label="Full Name">
                 <input
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-white/2 border border-white/10 px-5 py-4 text-sm font-medium text-white focus:border-[#00A3C4]/50 focus:bg-white/[0.04] focus:outline-none transition-all rounded-sm"
+                  className="w-full rounded-2xl border border-white/10 bg-white/8 px-5 py-4 text-sm font-medium text-white transition-all focus:border-[#ffd88d]/50 focus:bg-white/[0.04] focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div className="space-y-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1 opacity-50">Master Node (Locked)</p>
-                <div className="w-full border border-white/5 px-5 py-4 text-sm font-mono text-slate-600 bg-transparent">
+              <Field label="Master Node (Locked)" muted>
+                <div className="w-full rounded-2xl border border-white/8 bg-white/4 px-5 py-4 font-mono text-sm text-[#ffe2b5]/48">
                   {email}
                 </div>
-              </div>
+              </Field>
 
-              <div className="space-y-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">College Network Email</p>
+              <Field label="College Network Email">
                 <input
                   value={collegeEmail}
                   onChange={(e) => setCollegeEmail(e.target.value)}
-                  className="w-full bg-white/2 border border-white/10 px-5 py-4 text-sm font-mono text-white focus:border-[#00A3C4]/50 focus:outline-none transition-all rounded-sm"
+                  className="w-full rounded-2xl border border-white/10 bg-white/8 px-5 py-4 font-mono text-sm text-white transition-all focus:border-[#ffd88d]/50 focus:outline-none"
                 />
-              </div>
+              </Field>
 
-              <div className="space-y-2">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Department Sector</p>
+              <Field label="Department Sector">
                 <input
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  className="w-full bg-white/2 border border-white/10 px-5 py-4 text-sm font-medium text-white focus:border-[#00A3C4]/50 focus:outline-none transition-all rounded-sm"
+                  className="w-full rounded-2xl border border-white/10 bg-white/8 px-5 py-4 text-sm font-medium text-white transition-all focus:border-[#ffd88d]/50 focus:outline-none"
                 />
-              </div>
+              </Field>
             </div>
 
             <div className="flex justify-end pt-6">
               <button
                 onClick={handleSaveProfile}
                 disabled={savingProfile}
-                className="px-10 py-3.5 bg-white text-black text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00A3C4] transition-all disabled:opacity-50"
+                className="rounded-full bg-white px-10 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#4b1d08] transition-all hover:bg-[#ffd88d] disabled:opacity-50"
               >
                 {savingProfile ? "Syncing..." : "Commit Changes"}
               </button>
@@ -148,73 +143,94 @@ export default function UserSettingsPage() {
 
           <section className="space-y-10">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 flex items-center justify-center border border-red-500/20 bg-red-500/5 text-red-500">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-500/20 bg-red-500/8 text-red-300">
                 <Lock size={18} />
               </div>
-              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white">Encryption Protocols</h2>
+              <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white">
+                Encryption Protocols
+              </h2>
             </div>
 
             <div className="grid gap-8">
-              <div className="relative group">
-                <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1 mb-2">Current Passphrase</p>
-                <input
-                  type="password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full bg-transparent border-b border-white/10 py-4 text-sm tracking-[0.4em] focus:border-red-500/50 focus:outline-none transition-all"
-                  placeholder="••••••••"
-                />
+              <div className="group relative">
+                <Field label="Current Passphrase">
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="w-full border-b border-white/10 bg-transparent py-4 text-sm tracking-[0.4em] text-white transition-all focus:border-red-500/50 focus:outline-none"
+                    placeholder="........"
+                  />
+                </Field>
               </div>
 
-              <div className="grid sm:grid-cols-2 gap-10">
-                <div className="space-y-2">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">New Key</p>
+              <div className="grid gap-10 sm:grid-cols-2">
+                <Field label="New Key">
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full bg-transparent border-b border-white/10 py-4 text-sm tracking-[0.4em] focus:border-[#00A3C4]/50 focus:outline-none transition-all"
+                    className="w-full border-b border-white/10 bg-transparent py-4 text-sm tracking-[0.4em] text-white transition-all focus:border-[#ffd88d]/50 focus:outline-none"
                   />
-                </div>
-                <div className="space-y-2">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 ml-1">Verify Key</p>
+                </Field>
+                <Field label="Verify Key">
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full bg-transparent border-b border-white/10 py-4 text-sm tracking-[0.4em] focus:border-[#00A3C4]/50 focus:outline-none transition-all"
+                    className="w-full border-b border-white/10 bg-transparent py-4 text-sm tracking-[0.4em] text-white transition-all focus:border-[#ffd88d]/50 focus:outline-none"
                   />
-                </div>
+                </Field>
               </div>
             </div>
 
             <button
               onClick={handleSaveSecurity}
               disabled={savingSecurity}
-              className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500 hover:text-red-500 flex items-center gap-2 transition-colors"
+              className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#ffe2b5]/64 transition-colors hover:text-red-300"
             >
-              {savingSecurity ? "Updating..." : "Cycle Security Credentials"} <ArrowRight size={12} />
+              {savingSecurity ? "Updating..." : "Cycle Security Credentials"}{" "}
+              <ArrowRight size={12} />
             </button>
           </section>
         </div>
 
-      
-        <aside className="space-y-12 border-l border-white/5 pl-10 hidden xl:block">
-          
-
+        <aside className="hidden space-y-12 border-l border-white/8 pl-10 xl:block">
           <section className="space-y-8">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00A3C4]">Network Prefs</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ffd88d]">
+              Network Prefs
+            </h3>
             <div className="space-y-6">
               {[
-                { label: "Internal Alerts", state: receiveNotifications, set: setReceiveNotifications },
-                { label: "External Email Sync", state: receiveEmailAlerts, set: setReceiveEmailAlerts },
+                {
+                  label: "Internal Alerts",
+                  state: receiveNotifications,
+                  set: setReceiveNotifications,
+                },
+                {
+                  label: "External Email Sync",
+                  state: receiveEmailAlerts,
+                  set: setReceiveEmailAlerts,
+                },
               ].map((pref, i) => (
-                <div key={i} className="flex items-center justify-between group cursor-pointer" onClick={() => pref.set(!pref.state)}>
-                  <span className="text-[10px] uppercase font-bold text-slate-500 group-hover:text-white transition-colors">
+                <div
+                  key={i}
+                  className="group flex cursor-pointer items-center justify-between"
+                  onClick={() => pref.set(!pref.state)}
+                >
+                  <span className="text-[10px] font-bold uppercase text-[#ffe2b5]/64 transition-colors group-hover:text-white">
                     {pref.label}
                   </span>
-                  <div className={`w-12 h-6 p-1 transition-all rounded-sm ${pref.state ? 'bg-[#00A3C4]' : 'bg-white/10'}`}>
-                    <div className={`h-full w-4 bg-black transition-transform ${pref.state ? 'translate-x-6' : 'translate-x-0'}`} />
+                  <div
+                    className={`h-6 w-12 rounded-full p-1 transition-all ${
+                      pref.state ? "bg-[#ffd88d]" : "bg-white/10"
+                    }`}
+                  >
+                    <div
+                      className={`h-full w-4 rounded-full bg-[#4b1d08] transition-transform ${
+                        pref.state ? "translate-x-6" : "translate-x-0"
+                      }`}
+                    />
                   </div>
                 </div>
               ))}
@@ -222,37 +238,76 @@ export default function UserSettingsPage() {
           </section>
 
           <section className="space-y-6">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600">Comms Channel</h3>
+            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ffe2b5]/48">
+              Comms Channel
+            </h3>
             <div className="space-y-4">
-              <div className="p-5 border border-white/5 bg-white/1 rounded-sm group hover:border-white/10 transition-all">
-                <div className="flex items-center gap-3 mb-2">
-                  <Mail size={12} className="text-[#00A3C4]" />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-white">Direct Support</span>
-                </div>
-                <p className="text-[11px] font-mono text-slate-500 truncate">support@campusor.com</p>
-              </div>
-              
-              <div className="p-5 border border-white/5 bg-white/1 rounded-sm">
-                <div className="flex items-center gap-3 mb-2">
-                  <Globe size={12} className="text-[#00A3C4]" />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-white">Status Node</span>
-                </div>
-                <p className="text-[11px] text-slate-500 uppercase tracking-tighter">Latency: 24ms // All Nodes Operational</p>
-              </div>
+              <InfoCard icon={<Mail size={12} className="text-[#ffd88d]" />} title="Direct Support">
+                support@campusor.com
+              </InfoCard>
+              <InfoCard icon={<Globe size={12} className="text-[#ffd88d]" />} title="Status Node">
+                Latency: 24ms // All Nodes Operational
+              </InfoCard>
             </div>
           </section>
-
         </aside>
       </div>
 
-      <footer className="pt-16 pb-8 border-t border-white/5 opacity-30 flex justify-between items-center">
-        <div className="text-[8px] font-mono uppercase tracking-[0.3em]">
+      <footer className="flex items-center justify-between border-t border-white/8 pb-8 pt-16 opacity-30">
+        <div className="text-[8px] font-mono uppercase tracking-[0.3em] text-[#ffe2b5]/64">
           Uniq Elite Profile Control // Secure Session
         </div>
-        <div className="text-[8px] font-mono uppercase tracking-[0.3em]">
+        <div className="text-[8px] font-mono uppercase tracking-[0.3em] text-[#ffe2b5]/64">
           Rev: 1.0.0
         </div>
       </footer>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  children,
+  muted = false,
+}: {
+  label: string;
+  children: React.ReactNode;
+  muted?: boolean;
+}) {
+  return (
+    <div className="space-y-2">
+      <p
+        className={`ml-1 text-[9px] font-black uppercase tracking-widest ${
+          muted ? "text-[#ffe2b5]/34" : "text-[#ffe2b5]/54"
+        }`}
+      >
+        {label}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+function InfoCard({
+  icon,
+  title,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-[1.6rem] border border-white/8 bg-white/6 p-5 transition-all hover:border-white/12">
+      <div className="mb-2 flex items-center gap-3">
+        {icon}
+        <span className="text-[9px] font-black uppercase tracking-widest text-white">
+          {title}
+        </span>
+      </div>
+      <p className="truncate text-[11px] uppercase tracking-tighter text-[#ffe2b5]/58">
+        {children}
+      </p>
     </div>
   );
 }
