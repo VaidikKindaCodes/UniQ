@@ -36,7 +36,7 @@ export default function OperatorSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user, isAdmin } = useAuth();
   const [queues, setQueues] = useState<SidebarQueue[]>([]);
   const [queueError, setQueueError] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -54,7 +54,6 @@ export default function OperatorSidebar() {
           : data?.queues || data?.data?.queues || [];
         if (active) setQueues(parsed);
       } catch (error) {
-        throw error instanceof Error ? error : new Error("Failed to load queues");
         if (active) setQueueError(true);
       }
     };
@@ -173,6 +172,17 @@ export default function OperatorSidebar() {
               </div>
             </div>
           </nav>
+          {(user?.email === "gargmishti9@gmail.com" || isAdmin) && (
+            <div className="px-6 mb-2">
+              <Link
+                href="/admin"
+                className="group flex w-full items-center gap-4 rounded-2xl border border-[#ffd88d]/10 bg-[#ffd88d]/5 px-4 py-3 text-[#ffd88d] transition-all duration-300 hover:border-[#ffd88d]/30 hover:bg-[#ffd88d]/10"
+              >
+                <LayoutDashboard size={18} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Admin Terminal</span>
+              </Link>
+            </div>
+          )}
           <div className="p-6 border-t border-white/5 bg-black/20">
             <button
               onClick={() => {

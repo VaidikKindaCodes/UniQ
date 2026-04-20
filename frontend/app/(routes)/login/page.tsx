@@ -6,20 +6,24 @@ import Link from "next/link";
 import { useAuth } from "../../context/AuthContext";
 import { apiService } from "@/app/services/api";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Loader2, Mail, Lock, ArrowRight, Sparkles, ShieldCheck } from "lucide-react";
+import {
+  ArrowRight,
+  Loader2,
+  Lock,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 
 function BrandMark() {
   return (
     <Link href="/" className="flex items-center gap-3">
-      <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-white/20 bg-white/10 text-sm font-black text-white">
+      <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[var(--accent-primary)] text-xs font-black text-[var(--accent-foreground)] shadow-[0_12px_30px_rgba(0,0,0,0.2)]">
         U
       </div>
       <div>
-        <span className="block text-xl font-semibold uppercase tracking-[0.24em] text-white">
+        <span className="block text-sm font-semibold uppercase tracking-[0.34em] text-[var(--text-primary)]">
           UNIQ
-        </span>
-        <span className="block text-[10px] uppercase tracking-[0.38em] text-[#ffe2b5]/78">
-          Campus Flow
         </span>
       </div>
     </Link>
@@ -56,170 +60,160 @@ export default function LoginPage() {
 
       router.replace(safeNext || fallbackRoute);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Invalid credentials. Please try again.";
-      setError(message);
+      setError(
+        err instanceof Error ? err.message : "Invalid credentials. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#180902] text-white">
+    <main className="min-h-screen overflow-x-hidden bg-[var(--bg-surface)] text-[var(--text-primary)]">
       <div className="fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(243,162,0,0.28),_transparent_30%),linear-gradient(180deg,_#6f2408_0%,_#2f1104_52%,_#180902_100%)]" />
-        <div className="absolute left-[-10%] top-[12%] h-[24rem] w-[24rem] rounded-full bg-[#ffd88d]/14 blur-3xl" />
-        <div className="absolute right-[-6%] bottom-[8%] h-[22rem] w-[22rem] rounded-full bg-[#9b4210]/24 blur-3xl" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(196,166,122,0.12),_transparent_24%),linear-gradient(180deg,_#140e0b_0%,_#120d0a_52%,_#0f0a08_100%)]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-white/6" />
+        <div className="absolute left-[8%] top-[18%] h-64 w-64 rounded-full bg-[rgba(196,166,122,0.08)] blur-[120px]" />
+        <div className="absolute right-[6%] bottom-[10%] h-72 w-72 rounded-full bg-[rgba(108,86,66,0.12)] blur-[140px]" />
       </div>
 
-      <nav className="relative z-20 border-b border-white/8 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-12">
+      <nav className="relative z-20 border-b border-[var(--border-default)] bg-[rgba(20,14,11,0.78)] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 md:px-10">
           <BrandMark />
-          <div className="flex items-center gap-3 md:gap-5">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link
               href="/signup"
-              className="hidden rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#ffe2b5] transition-all hover:bg-white/10 md:inline-flex"
+              className="hidden rounded-full border border-[var(--border-default)] bg-[rgba(255,255,255,0.03)] px-5 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--text-secondary)] transition hover:border-[var(--border-strong)] hover:text-[var(--text-primary)] md:inline-flex"
             >
-              Create an account
+              Create account
             </Link>
-            <span className="rounded-full bg-[#ffd88d] px-5 py-2.5 text-sm font-semibold text-[#4b1d08]">
-              Login
+            <span className="rounded-full border border-[var(--border-strong)] bg-[rgba(255,255,255,0.04)] px-5 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[var(--text-primary)]">
+              Sign in
             </span>
           </div>
         </div>
       </nav>
 
-      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-89px)] max-w-7xl items-center gap-10 px-6 py-12 md:px-12 lg:grid-cols-[0.95fr_1.05fr]">
+      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-73px)] max-w-7xl items-center gap-10 px-6 py-10 md:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
         <section className="hidden lg:block">
-          <div className="max-w-xl space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-[11px] uppercase tracking-[0.34em] text-[#ffe2b5]">
-              <Sparkles className="h-3.5 w-3.5 text-[#ffd88d]" />
-              Secure campus access
+          <div className="max-w-2xl">
+            <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[var(--border-default)] bg-[rgba(255,255,255,0.03)] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.34em] text-[var(--accent-primary)]">
+              <Sparkles className="h-3.5 w-3.5" />
+              Secure operator access
             </div>
-            <h1 className="text-6xl font-semibold leading-[0.9] tracking-[-0.05em] text-white">
-              Welcome back.
-              <span className="block text-[#ffd88d]">Step into the calmer queue flow.</span>
+            <h1 className="max-w-3xl text-6xl font-semibold leading-[0.92] tracking-[-0.05em] text-[var(--text-primary)] xl:text-7xl">
+              Sign in to
+              <span className="block text-[var(--accent-primary)]">Enterprise Queue Management.</span>
             </h1>
-            <p className="max-w-lg text-base leading-8 text-[#ffe2b5]/74">
-              Sign in to track active tokens, browse live service points, and keep campus visits organized without the old rush.
+            <p className="mt-8 max-w-xl text-xl leading-10 text-[var(--text-secondary)]">
+              Monitor active queues, navigate service points, and keep campus traffic organized through a calmer, lower-noise control layer.
             </p>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="dashboard-panel-dark rounded-[1.8rem] p-5">
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ffd88d]">
-                  Live updates
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[#ffe2b5]/74">
-                  Real-time queue status and smarter arrival timing.
-                </p>
-              </div>
-              <div className="dashboard-panel-dark rounded-[1.8rem] p-5">
-                <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#ffd88d]">
-                  Faster check-in
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[#ffe2b5]/74">
-                  One place for identity, alerts, and active queue passes.
-                </p>
-              </div>
+            <div className="mt-12 grid gap-4 md:grid-cols-3">
+              <StatCard value="Live" label="queue visibility" />
+              <StatCard value="2m" label="faster session return" />
+              <StatCard value="1" label="secure access portal" />
             </div>
           </div>
         </section>
 
         <section className="mx-auto w-full max-w-xl">
-          <div className="dashboard-panel-dark relative overflow-hidden rounded-[2.2rem] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-12">
-            <div className="absolute right-0 top-0 h-40 w-40 bg-[#ffd88d]/8 blur-[90px]" />
-
-            <div className="mb-10 text-center">
-              <span className="text-[9px] font-bold uppercase tracking-[0.5em] text-[#ffd88d]">
-                Secure Access
-              </span>
-              <h2 className="mt-4 text-4xl font-bold uppercase tracking-tighter text-white sm:text-5xl">
-                Welcome{" "}
-                <span className="font-serif font-light italic lowercase text-[#ffe2b5]/78">
-                  back.
-                </span>
-              </h2>
+          <div className="theme-card-elevated relative overflow-hidden rounded-[2rem] p-7 sm:p-9">
+            <div className="absolute inset-x-0 top-0 h-14 border-b border-[var(--border-default)] bg-[rgba(255,255,255,0.015)]" />
+            <div className="absolute left-6 top-5 flex gap-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-[rgba(255,255,255,0.14)]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[rgba(255,255,255,0.08)]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[rgba(255,255,255,0.06)]" />
+            </div>
+            <div className="absolute right-6 top-5 text-[10px] uppercase tracking-[0.34em] text-[var(--text-tertiary)]">
+              Auth Node
             </div>
 
-            {error && (
-              <div className="mb-8 rounded-[1.4rem] border border-red-500/20 bg-red-500/10 p-4 text-[11px] font-bold uppercase tracking-widest text-red-200">
-                {error}
-              </div>
-            )}
+            <div className="relative pt-16">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.42em] text-[var(--accent-primary)]">
+                Secure Access
+              </p>
+              <h2 className="mt-5 text-4xl font-semibold tracking-[-0.04em] text-[var(--text-primary)] sm:text-5xl">
+                Welcome back.
+              </h2>
+              <p className="mt-4 text-base leading-8 text-[var(--text-secondary)]">
+                Enter your credentials to continue into the queue workspace.
+              </p>
 
-            <form onSubmit={handleLogin} className="space-y-7">
-              <Field
-                label="Identity"
-                icon={<Mail className="h-4 w-4 text-[#ffd88d]" />}
-                input={
+              {error && (
+                <div className="mt-6 rounded-[1.2rem] border border-red-400/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleLogin} className="mt-8 space-y-5">
+                <Field
+                  label="Identity"
+                  icon={<Mail className="h-4 w-4 text-[var(--accent-primary)]" />}
+                >
                   <input
                     type="email"
                     placeholder="EMAIL ADDRESS"
-                    className="w-full rounded-full border border-white/10 bg-[#3c1605]/90 py-3 pl-11 pr-4 text-sm tracking-[0.16em] uppercase text-[#ffe9c7] outline-none transition-all placeholder:text-[#d7a666] focus:border-[#ffd88d]"
+                    className="theme-input-muted w-full rounded-[1.15rem] border px-4 py-4 pl-11 text-sm tracking-[0.18em] uppercase text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
-                }
-              />
+                </Field>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="ml-1 text-[9px] font-black uppercase tracking-[0.3em] text-[#ffe2b5]/62">
-                    Security
-                  </label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-[8px] uppercase tracking-widest text-[#ffd88d]/78 transition-colors hover:text-white"
-                  >
-                    Forgot?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
-                    <Lock className="h-4 w-4 text-[#ffd88d]" />
-                  </div>
+                <Field
+                  label="Security"
+                  icon={<Lock className="h-4 w-4 text-[var(--accent-primary)]" />}
+                  action={
+                    <Link
+                      href="/forgot-password"
+                      className="text-[10px] uppercase tracking-[0.24em] text-[var(--text-tertiary)] transition hover:text-[var(--accent-primary)]"
+                    >
+                      Forgot password
+                    </Link>
+                  }
+                >
                   <input
                     type="password"
                     placeholder="PASSWORD"
-                    className="w-full rounded-full border border-white/10 bg-[#3c1605]/90 py-3 pl-11 pr-4 text-sm tracking-[0.16em] uppercase text-[#ffe9c7] outline-none transition-all placeholder:text-[#d7a666] focus:border-[#ffd88d]"
+                    className="theme-input-muted w-full rounded-[1.15rem] border px-4 py-4 pl-11 text-sm tracking-[0.18em] uppercase text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
+                </Field>
+
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="theme-primary-button group mt-2 flex w-full items-center justify-center gap-3 rounded-[1.15rem] px-5 py-4 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <span className="text-[11px] font-black uppercase tracking-[0.38em]">
+                        Sign In
+                      </span>
+                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              <div className="mt-8 flex flex-col gap-4 border-t border-[var(--border-default)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.28em] text-[var(--text-tertiary)]">
+                  <ShieldCheck className="h-4 w-4 text-[var(--accent-primary)]" />
+                  Protected session
                 </div>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-[var(--text-tertiary)]">
+                  New to Uniq?{" "}
+                  <Link href="/signup" className="text-[var(--accent-primary)] transition hover:text-[var(--text-primary)]">
+                    Create account
+                  </Link>
+                </p>
               </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="group relative mt-3 flex w-full items-center justify-center gap-3 overflow-hidden rounded-[1.4rem] bg-[#7a2f0d] py-5 transition-all hover:bg-[#5f2209] disabled:opacity-60"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin text-[#fff4df]" />
-                ) : (
-                  <>
-                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#fff4df]">
-                      Sign In
-                    </span>
-                    <ArrowRight className="h-4 w-4 text-[#fff4df] transition-transform group-hover:translate-x-1" />
-                  </>
-                )}
-              </button>
-            </form>
-
-            <div className="mt-10 flex items-center justify-between gap-4 border-t border-white/8 pt-8">
-              <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.28em] text-[#ffe2b5]/58">
-                <ShieldCheck className="h-4 w-4 text-[#ffd88d]" />
-                Protected session
-              </div>
-              <p className="text-right text-[10px] uppercase tracking-[0.28em] text-[#ffe2b5]/58">
-                New to Uniq?{" "}
-                <Link href="/signup" className="text-[#ffd88d] transition-colors hover:text-white">
-                  Create account
-                </Link>
-              </p>
             </div>
           </div>
         </section>
@@ -231,23 +225,41 @@ export default function LoginPage() {
 function Field({
   label,
   icon,
-  input,
+  action,
+  children,
 }: {
   label: string;
   icon: React.ReactNode;
-  input: React.ReactNode;
+  action?: React.ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <div className="space-y-2">
-      <label className="ml-1 text-[9px] font-black uppercase tracking-[0.3em] text-[#ffe2b5]/62">
-        {label}
-      </label>
+      <div className="flex items-center justify-between gap-3">
+        <label className="text-[10px] font-semibold uppercase tracking-[0.32em] text-[var(--text-secondary)]">
+          {label}
+        </label>
+        {action}
+      </div>
       <div className="relative">
         <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
           {icon}
         </div>
-        {input}
+        {children}
       </div>
+    </div>
+  );
+}
+
+function StatCard({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="theme-card rounded-[1.35rem] px-5 py-4">
+      <p className="text-2xl font-semibold tracking-[-0.04em] text-[var(--text-primary)]">
+        {value}
+      </p>
+      <p className="mt-2 text-[10px] uppercase tracking-[0.28em] text-[var(--text-tertiary)]">
+        {label}
+      </p>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { LayoutDashboard, Plus, PlayCircle, Settings2, Trash2, MapPin } from "lucide-react";
 
 export type OperatorQueue = {
   id: string;
@@ -54,7 +55,7 @@ export default function OperatorQueuesView() {
       );
     } catch (err) {
       console.error("Failed to load queues", err);
-      setError("Unable to load your queues right now.");
+      setError("Unable to load nodes from registry.");
     } finally {
       setLoading(false);
     }
@@ -75,8 +76,8 @@ export default function OperatorQueuesView() {
       await apiService.patch(`/operator/queues/${queue.id}/${action}`, {}, true);
       toast.success(
         queue.status === "ACTIVE"
-          ? "Queue paused successfully."
-          : "Queue resumed successfully.",
+          ? "NODE_PAUSED"
+          : "NODE_RESUMED",
       );
       setQueues((prev) =>
         prev.map((item) =>
@@ -90,8 +91,7 @@ export default function OperatorQueuesView() {
       );
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to update queue status";
-      console.error("Failed to update queue status", err);
+        err instanceof Error ? err.message : "Protocol breach detected.";
       toast.error(message);
     } finally {
       setActionQueueId(null);
@@ -103,7 +103,7 @@ export default function OperatorQueuesView() {
     const nextCapacity = Number(raw);
 
     if (Number.isNaN(nextCapacity) || nextCapacity <= 0) {
-      toast.error("Capacity must be a positive number.");
+      toast.error("Invalid density threshold.");
       return;
     }
 
@@ -114,7 +114,7 @@ export default function OperatorQueuesView() {
         { capacity: nextCapacity },
         true,
       );
-      toast.success("Capacity updated.");
+      toast.success("THRESHOLD_SYNCED");
       setQueues((prev) =>
         prev.map((item) =>
           item.id === queue.id
@@ -128,7 +128,7 @@ export default function OperatorQueuesView() {
       );
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to update capacity";
+        err instanceof Error ? err.message : "Sync failed.";
       toast.error(message);
     } finally {
       setSavingCapacity(null);
@@ -136,156 +136,156 @@ export default function OperatorQueuesView() {
   };
 
   return (
-    <div className="min-h-screen px-4 py-8">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="min-h-screen py-12 px-4 animate-in fade-in duration-700">
+      <div className="max-w-7xl mx-auto">
+        <header className="mb-16 flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-white/8 pb-10">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">
-              Operator Dashboard
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">
+              Operator Terminal
+            </span>
+            <h1 className="mt-2 text-5xl font-bold uppercase tracking-tighter text-white">
+              Node <span className="font-serif font-light italic lowercase text-[#ffe2b5]/70">registry.</span>
             </h1>
-            <p className="text-slate-600">
-              Manage all queues you own in one place.
-            </p>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-4">
             <Link
               href="/dashboard/operator/live"
-              className="inline-flex items-center justify-center rounded-full border border-sky-600 px-4 py-2 font-semibold text-sky-700 shadow-sm transition-colors hover:bg-sky-50"
+              className="group flex items-center gap-3 rounded-full border border-white/10 bg-white/8 px-6 py-3 transition-all hover:border-[#ffd88d]/40 hover:bg-white/12"
             >
-              Live Queues
+              <PlayCircle className="h-4 w-4 text-[#ffd88d]" />
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white">Live Terminals</span>
             </Link>
             <Link
               href="/dashboard/operator/create"
-              className="inline-flex items-center justify-center rounded-full bg-sky-600 px-4 py-2 font-semibold text-white shadow transition-colors hover:bg-sky-700"
+              className="group flex items-center gap-3 rounded-full bg-[#ffd88d] px-8 py-3 transition-all hover:scale-105 active:scale-95 shadow-[0_12px_24px_rgba(255,216,141,0.15)]"
             >
-              + Create Queue
+              <Plus className="h-4 w-4 text-[#4b1d08]" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#4b1d08]">Initialize Node</span>
             </Link>
           </div>
-        </div>
+        </header>
 
         {loading ? (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {[...Array(4)].map((_, i) => (
-              <CardSkeleton key={i} />
+              <div key={i} className="theme-card-elevated h-64 rounded-[2.5rem] animate-pulse" />
             ))}
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700">
-            {error}
+          <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+            <p className="text-[11px] font-black uppercase tracking-widest text-red-500">{error}</p>
           </div>
         ) : queues.length === 0 ? (
-          <div className="dashboard-panel rounded-[2rem] p-10 text-center">
-            <h2 className="mb-2 text-xl font-semibold text-slate-900">
-              No queues yet
-            </h2>
-            <p className="mb-6 text-slate-600">
-              Create your first queue to start serving users.
-            </p>
+          <div className="theme-card-elevated rounded-[3rem] p-20 text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+              <LayoutDashboard size={24} className="text-white/20" />
+            </div>
+            <h2 className="mb-4 text-2xl font-bold uppercase tracking-tight text-white">Registry Empty</h2>
+            <p className="mb-10 text-sm text-white/40 uppercase tracking-[0.2em]">No operational nodes detected in this sector.</p>
             <Link
               href="/dashboard/operator/create"
-              className="inline-flex items-center justify-center rounded-full bg-sky-600 px-4 py-2 font-semibold text-white shadow transition-colors hover:bg-sky-700"
+              className="inline-flex items-center gap-3 rounded-full bg-white/10 px-10 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-white transition-all hover:bg-white hover:text-black"
             >
-              Create a queue
+              Initialize First Node
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {queues.map((queue) => (
               <div
                 key={queue.id}
-                className="dashboard-panel rounded-[2rem] p-6 transition-all hover:-translate-y-1"
+                className="theme-card-elevated group relative rounded-[2.5rem] p-8 transition-all hover:border-[#ffd88d]/30"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-xl font-semibold text-slate-900">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`h-2 w-2 rounded-full ${queue.status === 'ACTIVE' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
+                      <span className="text-[8px] font-black uppercase tracking-[0.5em] text-[#ffe2b5]/40">{queue.status === 'ACTIVE' ? 'Operational' : 'Paused_'}</span>
+                    </div>
+                    <h3 className="text-3xl font-bold uppercase tracking-tighter text-white">
                       {queue.name}
                     </h3>
-                    <p className="flex items-center gap-2 text-sm text-slate-600">
-                      <span className="text-[var(--surface-rust)]">•</span>
+                    <p className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#ffe2b5]/60">
+                      <MapPin size={12} className="text-[#ffd88d]" />
                       {queue.location}
                     </p>
                   </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                      queue.status === "ACTIVE"
-                        ? "bg-green-100 text-green-700"
-                        : queue.isFull
-                          ? "bg-red-100 text-red-700"
-                          : "bg-amber-100 text-amber-700"
-                    }`}
-                  >
-                    {queue.isFull
-                      ? "Full"
-                      : queue.status === "ACTIVE"
-                        ? "Active"
-                        : "Paused"}
-                  </span>
-                </div>
-
-                <div className="mt-4 grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
-                  <div className="rounded-2xl bg-slate-50 p-3">
-                    <p className="text-slate-500">Waiting</p>
-                    <p className="font-semibold text-slate-900">
-                      {queue.waitingCount ?? "--"}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-slate-50 p-3">
-                    <p className="text-slate-500">Capacity</p>
-                    <p className="font-semibold text-slate-900">
-                      {queue.capacity ?? "--"}
-                    </p>
-                  </div>
-                  <div className="rounded-2xl bg-slate-50 p-3">
-                    <p className="text-slate-500">Available</p>
-                    <p className="font-semibold text-slate-900">
-                      {queue.capacity !== undefined && queue.waitingCount !== undefined
-                        ? Math.max(queue.capacity - queue.waitingCount, 0)
-                        : "--"}
-                    </p>
+                  <div className="flex flex-col items-end gap-3 text-right">
+                     <span className={`rounded-full px-4 py-1.5 text-[8px] font-black uppercase tracking-widest ${
+                       queue.isFull ? "bg-red-500/10 text-red-500 border border-red-500/20" : 
+                       queue.status === 'ACTIVE' ? "bg-green-500/10 text-green-500 border border-green-500/20" : 
+                       "bg-white/5 text-white/40 border border-white/10"
+                     }`}>
+                       {queue.isFull ? "Limit_Reached" : queue.status === 'ACTIVE' ? "Active_Sync" : "Offline"}
+                     </span>
                   </div>
                 </div>
 
-                <div className="mt-4 flex flex-wrap gap-3">
+                <div className="my-10 grid grid-cols-3 gap-4">
+                  {[
+                    { label: "Waiting", val: queue.waitingCount ?? 0, icon: <LayoutDashboard size={10} /> },
+                    { label: "Limit", val: queue.capacity ?? "--", icon: <Settings2 size={10} /> },
+                    { label: "Available", val: queue.capacity !== undefined && queue.waitingCount !== undefined ? Math.max(queue.capacity - queue.waitingCount, 0) : "--", icon: <PlayCircle size={10} /> }
+                  ].map((stat, i) => (
+                    <div key={i} className="rounded-3xl border border-white/5 bg-white/3 p-5">
+                      <div className="mb-2 flex items-center gap-2 text-[8px] font-black uppercase tracking-widest text-white/40">
+                        {stat.icon}
+                        {stat.label}
+                      </div>
+                      <p className="text-2xl font-bold tracking-tighter text-[#ffe2b5]">{stat.val}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4 pt-2">
                   <button
                     onClick={() => goToQueue(queue.id)}
-                    className="inline-flex items-center justify-center rounded-full border border-sky-600 px-4 py-2 font-semibold text-sky-700 transition-colors hover:bg-sky-50"
+                    className="flex-1 rounded-2xl bg-white/8 px-6 py-4 text-[10px] font-black uppercase tracking-[0.25em] text-white transition-all hover:bg-white hover:text-black"
                   >
-                    View Live
+                    Enter Live Terminal
                   </button>
                   <button
                     onClick={() => toggleQueueStatus(queue)}
-                    className="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
                     disabled={actionQueueId === queue.id}
+                    className={`flex-1 rounded-2xl border px-6 py-4 text-[10px] font-black uppercase tracking-[0.25em] transition-all ${
+                      queue.status === "ACTIVE" 
+                        ? "border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white" 
+                        : "border-green-500/20 text-green-400 hover:bg-green-500 hover:text-white"
+                    }`}
                   >
-                    {queue.status === "ACTIVE" ? "Pause" : "Resume"}
+                    {actionQueueId === queue.id ? "Processing..." : queue.status === "ACTIVE" ? "Suspend Sync" : "Restore Sync"}
                   </button>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      min={1}
-                      value={capacityEdits[queue.id] ?? queue.capacity ?? ""}
-                      onChange={(e) =>
-                        setCapacityEdits((prev) => ({
-                          ...prev,
-                          [queue.id]: e.target.value,
-                        }))
-                      }
-                      className="w-24 rounded-full border border-slate-200 px-3 py-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-200"
-                    />
-                    <button
+                </div>
+                
+                <div className="mt-6 flex items-center gap-4 border-t border-white/5 pt-6">
+                   <div className="flex-1 relative">
+                      <input
+                        type="number"
+                        min={1}
+                        value={capacityEdits[queue.id] ?? queue.capacity ?? ""}
+                        onChange={(e) =>
+                          setCapacityEdits((prev) => ({
+                            ...prev,
+                            [queue.id]: e.target.value,
+                          }))
+                        }
+                        className="w-full rounded-2xl border border-white/10 bg-white/4 px-6 py-3 text-[10px] font-bold tracking-widest text-white focus:border-[#ffd88d]/50 focus:outline-none"
+                      />
+                      <span className="absolute right-6 top-1/2 -translate-y-1/2 text-[7px] font-black uppercase tracking-widest text-white/20">Set_Cap</span>
+                   </div>
+                   <button
                       onClick={() => saveCapacity(queue)}
                       disabled={savingCapacity === queue.id}
-                      className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                      className="rounded-2xl border border-white/10 bg-white/5 px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-[#ffe2b5] transition-all hover:border-[#ffd88d]/40 hover:bg-[#ffd88d]/10 disabled:opacity-30"
                     >
-                      {savingCapacity === queue.id ? "Saving..." : "Save"}
+                      {savingCapacity === queue.id ? "Syncing" : "Sync"}
                     </button>
-                  </div>
-                  <Link
-                    href={`/kiosk/${queue.id}`}
-                    className="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-2 font-semibold text-slate-700 transition-colors hover:bg-slate-50"
-                  >
-                    Go to kiosk
-                  </Link>
+                    <Link
+                      href={`/kiosk/${queue.id}`}
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-[#ffe2b5]/40 transition-all hover:bg-white/10 hover:text-[#ffd88d]"
+                    >
+                      <Plus size={18} />
+                    </Link>
                 </div>
               </div>
             ))}

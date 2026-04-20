@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import AdminSidebar from "@/components/sidebar/AdminSidebar";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import { useAuth } from "@/app/context/AuthContext";
+import { Mail ,Shield} from "lucide-react";
 
 type AdminUser = {
   id: string;
@@ -88,125 +89,113 @@ export default function ManageAdminsPage() {
 
   return (
     <ProtectedRoute roles={["admin"]}>
-      <div className="app-shell flex min-h-screen">
+      <div className="flex min-h-screen bg-[#0c0502]">
         <AdminSidebar />
-        <main className="app-content-shell flex-1 lg:ml-72">
-          <div className="space-y-8 p-4 pt-12 sm:p-6 lg:p-8">
-            <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
-              <h1 className="mb-2 text-3xl font-bold text-slate-900 sm:text-4xl">
-                Manage Admins
+        <main className="flex-1 lg:ml-72">
+          <div className="max-w-7xl mx-auto px-4 py-12 md:px-8">
+            <header className="mb-14 border-b border-white/8 pb-10">
+              <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">
+                Security Infrastructure
+              </span>
+              <h1 className="mt-2 text-5xl font-bold uppercase tracking-tighter text-white">
+                Admin <span className="font-serif font-light italic lowercase text-[#ffe2b5]/70">privileges.</span>
               </h1>
-              <p className="text-sm text-slate-600 sm:text-base">
-                Create and manage administrator access. Public admin signup is
-                disabled.
-              </p>
-            </div>
+            </header>
 
-            <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
-              <h2 className="mb-4 text-xl font-semibold text-slate-900">
-                Invite New Admin
-              </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+              {/* Invite Section */}
+              <div className="lg:col-span-4">
+                <section className="theme-card-elevated rounded-[2.5rem] border border-white/5 bg-[#1a0f0a]/40 p-8 sticky top-8">
+                  <h2 className="mb-6 text-[11px] font-black uppercase tracking-[0.4em] text-[#ffd88d]">
+                    Authorize Access
+                  </h2>
+                  <p className="mb-8 text-[11px] font-bold uppercase tracking-widest text-white/40 leading-relaxed">
+                    Create and manage administrator access. General registration is restricted.
+                  </p>
 
-              <div className="flex flex-col gap-4 sm:flex-row">
-                <input
-                  type="email"
-                  placeholder="newadmin@college.edu"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="flex-1 rounded-xl border border-slate-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                />
+                  <div className="space-y-4">
+                    <div className="relative group">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20 group-focus-within:text-[#ffd88d] transition-colors" size={16} />
+                      <input
+                        type="email"
+                        placeholder="ADMIN@UNIQ.EDU"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full rounded-2xl border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-[10px] font-black uppercase tracking-widest text-white outline-none focus:border-[#ffd88d]/40 transition-all"
+                      />
+                    </div>
 
-                <button
-                  onClick={handleCreateAdmin}
-                  disabled={loading}
-                  className="rounded-xl bg-sky-600 px-6 py-3 font-semibold text-white transition hover:bg-sky-700 disabled:opacity-50"
-                >
-                  {loading ? "Sending..." : "Send Invite"}
-                </button>
+                    <button
+                      onClick={handleCreateAdmin}
+                      disabled={loading}
+                      className="w-full rounded-2xl bg-white py-4 text-[10px] font-black uppercase tracking-[0.3em] text-black transition-all hover:bg-[#ffd88d] disabled:opacity-20"
+                    >
+                      {loading ? "TRANSMITTING..." : "DISPATCH INVITE"}
+                    </button>
+                  </div>
+
+                  <div className="mt-8 flex gap-3 rounded-2xl bg-white/5 p-4 border border-white/5">
+                    <Shield className="shrink-0 text-[#ffd88d]" size={16} />
+                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-white/50 leading-relaxed">
+                      Admins MUST verify their identity via the encrypted link sent to their institutional email.
+                    </p>
+                  </div>
+                </section>
               </div>
 
-              <p className="mt-3 text-xs text-slate-500">
-                Admins receive an email invite to verify their account.
-              </p>
-            </div>
+              {/* Table Section */}
+              <div className="lg:col-span-8">
+                <section className="theme-card-elevated rounded-[2.5rem] border border-white/5 bg-[#1a0f0a]/40 overflow-hidden">
+                  <div className="px-8 py-6 border-b border-white/5 bg-black/20 flex items-center justify-between">
+                    <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40">
+                      Access Roster
+                    </h2>
+                    <span className="rounded-full bg-[#ffd88d]/10 px-3 py-1 text-[8px] font-black uppercase tracking-widest text-[#ffd88d] border border-[#ffd88d]/20">
+                      {admins.length} Total Admins
+                    </span>
+                  </div>
 
-            <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
-              <h2 className="mb-6 text-xl font-semibold text-slate-900">
-                Existing Admins
-              </h2>
-
-              <div className="overflow-x-auto">
-                <table className="min-w-full overflow-hidden rounded-xl border border-slate-200">
-                  <thead className="bg-slate-100">
-                    <tr>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                        Email
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                        Status
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                        Created By
-                      </th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
-                        Created At
-                      </th>
-                      <th className="px-4 py-3 text-right text-sm font-semibold text-slate-700">
-                        Actions
-                      </th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {admins.map((admin) => (
-                      <tr
-                        key={admin.id}
-                        className="border-t border-slate-200 hover:bg-slate-50"
-                      >
-                        <td className="px-4 py-3 font-medium text-slate-900">
-                          {admin.email}
-                        </td>
-
-                        <td className="px-4 py-3">
-                          {admin.emailVerified ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
-                              Verified
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-700">
-                              Pending
-                            </span>
-                          )}
-                        </td>
-
-                        <td className="px-4 py-3 text-sm text-slate-600">
-                          {admin.createdBy ?? "Bootstrap Admin"}
-                        </td>
-
-                        <td className="px-4 py-3 text-sm text-slate-600">
-                          {admin.createdAt}
-                        </td>
-
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            disabled
-                            className="cursor-not-allowed text-sm text-slate-400"
-                            title="Self-role edits disabled"
-                          >
-                            --
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="border-b border-white/5 text-[9px] font-black uppercase tracking-widest text-white/20">
+                          <th className="px-8 py-4">Identity</th>
+                          <th className="px-8 py-4">Status</th>
+                          <th className="px-8 py-4">Authorized At</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {admins.map((admin) => (
+                          <tr key={admin.id} className="hover:bg-white/5 transition-colors">
+                            <td className="px-8 py-6">
+                              <p className="text-[11px] font-bold text-white uppercase tracking-tight">{admin.email}</p>
+                              <p className="text-[8px] font-black uppercase tracking-widest text-[#ffd88d]/40">
+                                BY: {admin.createdBy ? "UPPER MGMT" : "SYSTEM ROOT"}
+                              </p>
+                            </td>
+                            <td className="px-8 py-6">
+                              {admin.emailVerified ? (
+                                <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-green-500">
+                                  <div className="h-1.5 w-1.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
+                                  Verified
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-amber-500">
+                                  <div className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                  Pending
+                                </span>
+                              )}
+                            </td>
+                            <td className="px-8 py-6 text-[10px] font-bold text-white/30 tracking-widest">
+                              {admin.createdAt}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
               </div>
-
-              <p className="mt-4 text-xs text-slate-500">
-                - Admin role changes and self-edits are intentionally disabled.
-                <br />
-                - Bootstrap admin cannot be removed.
-              </p>
             </div>
           </div>
         </main>

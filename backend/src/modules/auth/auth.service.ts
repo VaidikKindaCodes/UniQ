@@ -44,6 +44,12 @@ export interface SafeUser {
   updatedAt: Date;
 }
 
+export interface OtpDispatchMeta {
+  delivered: boolean;
+  error?: string;
+  devOtpPreview?: string;
+}
+
 export interface VerifyOtpInput {
   email: string;
   otp: string;
@@ -51,6 +57,11 @@ export interface VerifyOtpInput {
 
 export interface ResendOtpInput {
   email: string;
+}
+
+export interface RegisterUserResult {
+  user: SafeUser;
+  otpDispatch: OtpDispatchMeta;
 }
 
 const generateOtp = (): string => {
@@ -76,6 +87,7 @@ const signToken = (safeUser: SafeUser): string => {
   const payload = {
     sub: safeUser.id, // subject
     role: safeUser.role,
+    email: safeUser.email,
   };
 
   const signOptions: SignOptions = {
@@ -106,7 +118,7 @@ const applyEmailOtp = async (user: IUser): Promise<{ otp: string }> => {
 
 export const registerUser = async (
   input: RegisterDetails
-): Promise<SafeUser> => {
+): Promise<RegisterUserResult> => {
   const { name, email, password, role, collegeEmail, department, position } = input;
   
   const finalRole = role || "user";
@@ -167,14 +179,21 @@ export const registerUser = async (
 
   const { otp } = await applyEmailOtp(user);
 
-  try {
-    await sendEmailVerificationOtp(user.email, user.name, otp, OTP_EXPIRY_MINUTES);
-  } catch (error) {
-    // Email failures should not block signup
-    console.error("Failed to send verification email:", error);
-  }
+  const emailResult = await sendEmailVerificationOtp(
+    user.email,
+    user.name,
+    otp,
+    OTP_EXPIRY_MINUTES
+  );
 
-  return buildSafeUser(user);
+  return {
+    user: buildSafeUser(user),
+    otpDispatch: {
+      delivered: emailResult.success,
+      error: emailResult.error,
+      devOtpPreview: env.NODE_ENV !== "production" ? otp : undefined,
+    },
+  };
 };
 
 ///-------------------------LOGIN SERVICE---------------------------------------------
@@ -268,7 +287,7 @@ export const verifyEmailOtp = async (
 
 export const resendEmailOtp = async (
   input: ResendOtpInput
-): Promise<{ message: string }> => {
+): Promise<{ message: string; otpDispatch: OtpDispatchMeta }> => {
   const { email } = input;
 
   const user = await User.findOne({ email });
@@ -283,18 +302,23 @@ export const resendEmailOtp = async (
 
   const { otp } = await applyEmailOtp(user);
 
-  try {
-    await sendEmailVerificationOtp(
-      user.email,
-      user.name,
-      otp,
-      OTP_EXPIRY_MINUTES
-    );
-  } catch (error) {
-    console.error("Failed to resend verification email:", error);
-  }
+  const emailResult = await sendEmailVerificationOtp(
+    user.email,
+    user.name,
+    otp,
+    OTP_EXPIRY_MINUTES
+  );
 
-  return { message: "A new OTP has been sent to your email." };
+  return {
+    message: emailResult.success
+      ? "A new OTP has been sent to your email."
+      : "OTP generated, but email delivery failed.",
+    otpDispatch: {
+      delivered: emailResult.success,
+      error: emailResult.error,
+      devOtpPreview: env.NODE_ENV !== "production" ? otp : undefined,
+    },
+  };
 };
 
 ///-------------------------CREATE ADMIN USER SERVICE---------------------------------------------
@@ -340,11 +364,15 @@ export const createAdminUser = async (
 
   const { otp } = await applyEmailOtp(user);
 
-  try {
-    await sendEmailVerificationOtp(user.email, user.name, otp, OTP_EXPIRY_MINUTES);
-  } catch (error) {
-    // Email failures should not block signup
-    console.error("Failed to send verification email:", error);
+  const emailResult = await sendEmailVerificationOtp(
+    user.email,
+    user.name,
+    otp,
+    OTP_EXPIRY_MINUTES
+  );
+
+  if (!emailResult.success) {
+    console.error("Failed to send verification email:", emailResult.error);
   }
 
   return {

@@ -351,3 +351,47 @@ export const createInvite = async (
 
   return { message: "Invitation sent successfully" };
 };
+
+/**
+ * Get all queues for management
+ */
+export const getAllQueues = async () => {
+  return await Queue.find()
+    .populate("operator", "name email")
+    .sort({ createdAt: -1 });
+};
+
+/**
+ * Delete a queue and its tokens
+ */
+export const deleteQueue = async (queueId: string) => {
+  // Delete all tokens associated with this queue
+  await Token.deleteMany({ queue: queueId });
+  // Delete the queue itself
+  const result = await Queue.findByIdAndDelete(queueId);
+  if (!result) {
+    throw new Error("Queue not found");
+  }
+  return { message: "Queue and associated tokens deleted successfully" };
+};
+
+/**
+ * Get all operators for management
+ */
+export const getAllOperators = async () => {
+  return await User.find({ role: "operator" })
+    .select("-password")
+    .sort({ createdAt: -1 });
+};
+
+/**
+ * Reset operator password
+ */
+export const resetOperatorPassword = async (operatorId: string, newPassword: string) => {
+  const hashedPassword = await import("bcryptjs").then(m => m.default.hash(newPassword, 10));
+  const result = await User.findByIdAndUpdate(operatorId, { password: hashedPassword });
+  if (!result) {
+    throw new Error("Operator not found");
+  }
+  return { message: "Operator password reset successfully" };
+};

@@ -34,12 +34,17 @@ export default function VerifyEmailPage() {
   const { login } = useAuth();
 
   const initialEmail = searchParams.get("email") || "";
+  const initialInfo = searchParams.get("info") || "";
+  const initialDeliveryError = searchParams.get("deliveryError") || "";
+  const initialDevOtp = searchParams.get("devOtp") || "";
   const [email, setEmail] = useState(initialEmail);
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [info, setInfo] = useState(
-    initialEmail ? `We sent a 6-digit code to ${initialEmail}.` : "",
+    initialInfo || (initialEmail ? `We sent a 6-digit code to ${initialEmail}.` : ""),
   );
+  const [deliveryError, setDeliveryError] = useState(initialDeliveryError);
+  const [devOtp, setDevOtp] = useState(initialDevOtp);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [cooldown, setCooldown] = useState(0);
@@ -47,6 +52,12 @@ export default function VerifyEmailPage() {
   useEffect(() => {
     setEmail(initialEmail);
   }, [initialEmail]);
+
+  useEffect(() => {
+    setInfo(initialInfo || (initialEmail ? `We sent a 6-digit code to ${initialEmail}.` : ""));
+    setDeliveryError(initialDeliveryError);
+    setDevOtp(initialDevOtp);
+  }, [initialDeliveryError, initialDevOtp, initialEmail, initialInfo]);
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -110,6 +121,8 @@ export default function VerifyEmailPage() {
     try {
       const data = await apiService.post("/auth/resend-otp", { email }, false);
       setInfo(data.message || "A fresh code is on its way.");
+      setDeliveryError(data.emailDelivery === "failed" ? data.emailError || "Email delivery failed." : "");
+      setDevOtp(data.devOtpPreview || "");
       setCooldown(60);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Failed to resend code.");
@@ -217,6 +230,18 @@ export default function VerifyEmailPage() {
             {info && (
               <div className="mb-4 rounded-[1.2rem] border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-100">
                 {info}
+              </div>
+            )}
+
+            {deliveryError && (
+              <div className="mb-4 rounded-[1.2rem] border border-amber-400/20 bg-amber-300/10 p-3 text-sm text-amber-100">
+                OTP was generated, but email delivery failed: {deliveryError}
+              </div>
+            )}
+
+            {devOtp && (
+              <div className="mb-4 rounded-[1.2rem] border border-[#ffd88d]/30 bg-[#ffd88d]/10 p-3 text-sm text-[#fff1d1]">
+                Local development OTP: <span className="font-semibold tracking-[0.3em]">{devOtp}</span>
               </div>
             )}
 

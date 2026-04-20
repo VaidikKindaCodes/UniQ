@@ -170,7 +170,7 @@ export const sendEmailVerificationOtp = async (
   userName: string,
   otp: string,
   expiresInMinutes: number
-): Promise<void> => {
+): Promise<SendEmailResult> => {
   try {
     const html = getEmailVerificationHtml({
       userName,
@@ -194,8 +194,14 @@ export const sendEmailVerificationOtp = async (
     if (!result.success) {
       console.error("Failed to send verification email:", result.error);
     }
+
+    return result;
   } catch (error) {
     console.error("Error sending verification email:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Unknown error occurred",
+    };
   }
 };
 

@@ -77,51 +77,62 @@ export default function AdminSidebar() {
         }`}
       >
         <div className="flex h-full flex-col">
-          <div className="border-b border-white/12 p-6">
-            <div className="flex items-center justify-between">
-              <div className="brand-wordmark text-white">
-                <span className="brand-wordmark-mark">u</span>
-                <span className="brand-wordmark-name text-white">uniq</span>
-              </div>
+          <div className="p-8 border-b border-white/5">
+            <div className="flex items-center justify-between mb-8">
+              <Link href="/" className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-white/18 bg-white/10 text-xs font-black text-white">
+                  U
+                </div>
+                <div>
+                  <span className="block text-lg font-semibold uppercase tracking-[0.24em] text-white">UNIQ</span>
+                  <span className="block text-[9px] uppercase tracking-[0.34em] text-[#ffe2b5]/80">Admin Console</span>
+                </div>
+              </Link>
               <ThemeToggle />
             </div>
-            <p className="mt-4 text-xs font-semibold uppercase tracking-[0.26em] text-white/70">
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ffd88d]">
               Admin Workspace
             </p>
           </div>
 
-          <nav className="flex-1 p-4 space-y-2">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200 ${
-                  isActive(item.href)
-                    ? "sidebar-nav-link-active"
-                    : "sidebar-nav-link"
-                }`}
-              >
-                {item.icon}
-                <span className="font-medium">{item.label}</span>
-                {isActive(item.href) && (
-                  <ChevronRight size={16} className="ml-auto" />
-                )}
-              </Link>
-            ))}
+          <nav className="flex-1 px-4 py-8 space-y-1">
+            <p className="mb-4 px-4 text-[8px] font-black uppercase tracking-[0.4em] text-white/42">Main Modules</p>
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl border px-4 py-3 transition-all duration-300 ${
+                    active
+                      ? "border-[#ffd88d]/20 bg-white/10 text-white shadow-[inset_0_0_10px_rgba(255,216,141,0.08)]"
+                      : "border-transparent text-white/62 hover:bg-white/8 hover:text-white"
+                  }`}
+                >
+                  <span className={`${active ? "text-[#ffd88d]" : "text-white/44 group-hover:text-[#ffd88d]"}`}>
+                    {item.icon}
+                  </span>
+                  <span className="text-[11px] font-black uppercase tracking-widest transition-colors">
+                    {item.label}
+                  </span>
+                  {active && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#ffd88d]" />}
+                </Link>
+              );
+            })}
           </nav>
 
-          <div className="p-4 border-t border-white/12">
+          <div className="p-6 border-t border-white/5 bg-black/20">
             <button
               onClick={() => {
                 logout();
                 setIsOpen(false);
                 router.push("/login");
               }}
-              className="sidebar-nav-link flex w-full items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200"
+              className="group flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-white/62 transition-colors hover:bg-red-500/10 hover:text-red-200"
             >
-              <LogOut size={20} />
-              <span className="font-medium">Logout</span>
+              <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">Terminate Session</span>
             </button>
           </div>
         </div>
@@ -129,3 +140,4 @@ export default function AdminSidebar() {
     </>
   );
 }
+

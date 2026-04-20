@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import { BarChart3, X, ListOrdered, Users, ShieldUser, Settings, ChevronRight } from "lucide-react";
 import StatCard from "@/components/charts/StatCard";
 import QueueLoadChart from "@/components/charts/QueueLoadChart";
 import WaitTimeChart from "@/components/charts/WaitTimeChart";
@@ -9,8 +11,6 @@ import ServiceEfficiencyChart from "@/components/charts/ServiceEfficiencyChart";
 import AdminSidebar from "@/components/sidebar/AdminSidebar";
 import { fetchDashboardSummary, DashboardSummary } from "@/lib/api/admin";
 import ProtectedRoute from "../../components/ProtectedRoute";
-import { StatSkeleton } from "@/components/skeletons/StatSkeleton";
-import { ChartSkeleton } from "@/components/skeletons/ChartSkeleton";
 
 export default function AdminPage() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
@@ -37,110 +37,128 @@ export default function AdminPage() {
 
   return (
     <ProtectedRoute roles={["admin"]}>
-      <div className="app-shell flex min-h-screen">
+      <div className="flex min-h-screen bg-[#0c0502]">
         <AdminSidebar />
 
-        <main className="app-content-shell flex-1 lg:ml-72">
-          <div className="p-4 sm:p-6 lg:p-8">
-            <div className="mb-8 sm:mb-10 pt-12 lg:pt-0">
-              <div className="dashboard-panel rounded-[2rem] p-6 sm:p-8">
-                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 mb-2">
-                  Admin Analytics Dashboard
+        <main className="flex-1 lg:ml-72">
+          <div className="max-w-7xl mx-auto px-4 py-12 md:px-8">
+            <header className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-white/8 pb-10">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">
+                  Intelligence Hub
+                </span>
+                <h1 className="mt-2 text-5xl font-bold uppercase tracking-tighter text-white">
+                  System <span className="font-serif font-light italic lowercase text-[#ffe2b5]/70">overview.</span>
                 </h1>
-                <p className="text-slate-600 text-sm sm:text-base font-medium">
-                  Overview of system performance and metrics
-                </p>
               </div>
-            </div>
-          </div>
-
-          {/* Stats Grid */}
-          {loading ? (
-            <div className="dashboard-panel-dark rounded-[2rem] p-6 sm:p-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
-                {[...Array(5)].map((_, i) => (
-                  <StatSkeleton key={i} />
-                ))}
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <ChartSkeleton key={i} />
-                ))}
-              </div>
-            </div>
-          ) : error ? (
-            <div className="bg-red-50 border border-red-300 rounded-2xl p-8 shadow-lg mb-10 mr-4">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                  <svg
-                    className="w-6 h-6 text-red-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 9v2m0 4v2M7.5 14.5L12 20l4.5-5.5M12 12h.01"
-                    />
-                  </svg>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[#ffd88d]">
+                  <BarChart3 size={18} />
                 </div>
-                <div>
-                  <p className="text-red-800 font-bold text-lg">
-                    Error Loading Data
-                  </p>
-                  <p className="text-red-600">{error}</p>
+                <div className="text-right">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-white/40">Network Status</p>
+                  <p className="text-[11px] font-bold text-green-500 uppercase tracking-tight">All Nodes Operational</p>
                 </div>
               </div>
-            </div>
-          ) : summary ? (
-            <div className="dashboard-panel-dark rounded-[2rem] p-6 sm:p-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-8">
-                <StatCard
-                  title="Active Tokens"
-                  value={summary.activeTokens.toString()}
-                  color="blue"
-                />
-                <StatCard
-                  title="Served Today"
-                  value={summary.servedToday.toString()}
-                  color="green"
-                />
-                <StatCard
-                  title="Skipped Tokens"
-                  value={summary.skippedTokens.toString()}
-                  color="amber"
-                />
-                <StatCard
-                  title="Total Tokens Today"
-                  value={summary.totalTokensToday.toString()}
-                  color="blue"
-                />
-                <StatCard
-                  title="Peak Hour"
-                  value={summary.peakHour}
-                  color="purple"
-                />
-              </div>
+            </header>
 
-              {/* Charts Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
-                  <QueueLoadChart />
+            {loading ? (
+              <div className="space-y-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-32 rounded-[2rem] bg-white/5 animate-pulse" />
+                  ))}
                 </div>
-                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
-                  <WaitTimeChart />
-                </div>
-                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
-                  <TokensServedChart />
-                </div>
-                <div className="dashboard-panel rounded-[1.5rem] p-4 sm:p-6">
-                  <ServiceEfficiencyChart />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {[...Array(2)].map((_, i) => (
+                    <div key={i} className="h-80 rounded-[2.5rem] bg-white/5 animate-pulse" />
+                  ))}
                 </div>
               </div>
-            </div>
-          ) : null}
+            ) : error ? (
+              <div className="rounded-[2.5rem] border border-red-500/20 bg-red-500/5 p-10 text-center">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-500/10 text-red-500">
+                  <X size={32} />
+                </div>
+                <h2 className="text-xl font-bold uppercase tracking-tight text-white mb-2">Telemetry Interrupted</h2>
+                <p className="text-sm text-red-400/60 uppercase tracking-widest mb-8">{error}</p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="rounded-full bg-white px-8 py-3 text-[10px] font-black uppercase tracking-widest text-black hover:bg-[#ffd88d] transition-all"
+                >
+                  Attempt Reconnection
+                </button>
+              </div>
+            ) : summary ? (
+              <div className="space-y-16 animate-in fade-in duration-1000">
+                {/* Stats Section */}
+                <section>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <StatCard title="Active Flux" value={summary.activeTokens.toString()} color="blue" />
+                    <StatCard title="Served Today" value={summary.servedToday.toString()} color="green" />
+                    <StatCard title="Missed/Skipped" value={summary.skippedTokens.toString()} color="amber" />
+                    <StatCard title="Peak Period" value={summary.peakHour} color="purple" />
+                  </div>
+                </section>
+
+                {/* Command Center & System Performance */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  <div className="lg:col-span-4 space-y-8">
+                    <section className="theme-card-elevated rounded-[2.5rem] p-8 border border-white/5 bg-[#1a0f0a]/40">
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-[#ffd88d] mb-8">Command Center</h3>
+                      <div className="space-y-4">
+                        {[
+                          { label: "Initialize New Node", icon: <ListOrdered size={16} />, href: "/admin/queues" },
+                          { label: "Authorize Operator", icon: <Users size={16} />, href: "/admin/operators" },
+                          { label: "Network Invite", icon: <ShieldUser size={16} />, href: "/admin/manage-admins" },
+                          { label: "Global Settings", icon: <Settings size={16} />, href: "/admin/settings" },
+                        ].map((action, i) => (
+                          <Link 
+                            key={i} 
+                            href={action.href}
+                            className="flex items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-4 text-white hover:border-[#ffd88d]/40 hover:bg-white/10 transition-all group"
+                          >
+                            <span className="text-[#ffd88d] group-hover:scale-110 transition-transform">{action.icon}</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">{action.label}</span>
+                            <ChevronRight size={14} className="ml-auto opacity-30 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                          </Link>
+                        ))}
+                      </div>
+                    </section>
+
+                    <section className="theme-card-elevated rounded-[2.5rem] p-8 border border-white/5 bg-[#1a0f0a]/40">
+                      <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40 mb-8">Service Efficiency</h3>
+                      <ServiceEfficiencyChart />
+                    </section>
+                  </div>
+
+                  <div className="lg:col-span-8 space-y-8">
+                     <section className="theme-card-elevated rounded-[2.5rem] p-8 border border-white/5 bg-[#1a0f0a]/40 min-h-[400px]">
+                        <div className="flex items-center justify-between mb-10">
+                          <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40">Queue Load Analytics</h3>
+                          <div className="flex items-center gap-2">
+                             <div className="h-2 w-2 rounded-full bg-[#ffd88d]" />
+                             <span className="text-[8px] font-black uppercase tracking-widest text-[#ffd88d]">Live Metric</span>
+                          </div>
+                        </div>
+                        <QueueLoadChart />
+                     </section>
+
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <section className="theme-card-elevated rounded-[2.5rem] p-8 border border-white/5 bg-[#1a0f0a]/40">
+                           <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40 mb-8">Wait Time distribution</h3>
+                           <WaitTimeChart />
+                        </section>
+                        <section className="theme-card-elevated rounded-[2.5rem] p-8 border border-white/5 bg-[#1a0f0a]/40">
+                           <h3 className="text-[11px] font-black uppercase tracking-[0.4em] text-white/40 mb-8">Traffic served</h3>
+                           <TokensServedChart />
+                        </section>
+                     </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
+          </div>
         </main>
       </div>
     </ProtectedRoute>

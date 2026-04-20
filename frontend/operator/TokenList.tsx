@@ -1,82 +1,78 @@
-type Token = {
-  id: string;
-  number: number;
-  status: string;
+import { User, Hash, Clock, ArrowRight } from "lucide-react";
+
+type Token = { id: string; number: number; status: string };
+
+type Props = {
+  tokens: Token[];
 };
 
-export default function TokenList({ tokens }: { tokens: Token[] }) {
+export default function TokenList({ tokens }: Props) {
   return (
-    <div className="dashboard-panel rounded-[2rem] p-6 transition-all duration-300 hover:-translate-y-1">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-slate-900">
-          Upcoming Tokens
-        </h3>
-        <div className="bg-sky-100 rounded-full px-3 py-1">
-          <span className="text-sm font-semibold text-sky-700">
-            {tokens.length} in queue
-          </span>
+    <div className="theme-card-elevated rounded-[2.5rem] p-8 shadow-2xl">
+      <div className="flex items-center justify-between mb-10 px-2">
+        <div>
+          <h3 className="text-2xl font-bold uppercase tracking-tighter text-white">
+            Waiting <span className="font-serif font-light italic lowercase text-[#ffe2b5]/60">sequence.</span>
+          </h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[#ffe2b5]/30 mt-1">
+            Stack depth: {tokens.length} nodes
+          </p>
+        </div>
+        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-white/5 border border-white/5 text-[#ffd88d]">
+           <Hash size={18} />
         </div>
       </div>
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
+      <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
         {tokens.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="bg-slate-100 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-slate-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                />
-              </svg>
-            </div>
-            <p className="text-slate-500">No tokens in queue</p>
-            <p className="text-sm text-slate-400 mt-1">
-              All tokens have been served
-            </p>
+          <div className="py-20 text-center rounded-[2rem] border border-dashed border-white/10 bg-white/2">
+            <User size={32} className="mx-auto mb-4 text-white/10" />
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-white/20">No active signals in queue.</p>
           </div>
         ) : (
           tokens.map((token, index) => (
             <div
               key={token.id}
-              className="flex justify-between items-center p-4 rounded-xl border border-slate-100 hover:bg-slate-50 transition-all duration-300 hover:shadow-md group"
+              className="group flex items-center gap-6 rounded-3xl border border-white/5 bg-white/5 p-5 transition-all hover:border-[#ffd88d]/30 hover:bg-white/8"
             >
-              <div className="flex items-center space-x-4">
-                <div className="bg-sky-100 rounded-full w-10 h-10 flex items-center justify-center">
-                  <span className="text-sm font-semibold text-sky-700">
-                    {index + 1}
-                  </span>
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ffd88d] text-[#4b1d08] shadow-[0_8px_16px_rgba(255,216,141,0.1)]">
+                <span className="text-xl font-black">{token.number}</span>
+              </div>
+              
+              <div className="flex-1 space-y-1">
+                <div className="flex items-center gap-3">
+                   <p className="text-sm font-bold uppercase tracking-tight text-white line-clamp-1">
+                     Entity_{token.id.slice(-6).toUpperCase()}
+                   </p>
+                   <span className="text-[8px] font-black text-white/20 uppercase tracking-widest">#{index + 1}</span>
                 </div>
-                <div>
-                  <span className="text-slate-900 font-medium">
-                    Token {token.number}
+                <div className="flex items-center gap-4 text-[9px] font-bold uppercase tracking-[0.15em] text-[#ffe2b5]/40">
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={10} className="text-[#ffd88d]/60" />
+                    EST: {index * 5 + 2}m
                   </span>
-                  <p className="text-xs text-slate-500 mt-1">
-                    Position #{index + 1}
-                  </p>
+                  <span className="flex items-center gap-1.5">
+                    <div className="h-1 w-1 rounded-full bg-green-500/50" />
+                    Waiting
+                  </span>
                 </div>
               </div>
 
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                  token.status === "waiting"
-                    ? "bg-sky-100 text-sky-700"
-                    : token.status === "served"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-yellow-100 text-yellow-700"
-                }`}
-              >
-                {token.status}
-              </span>
+              <button className="h-10 w-10 flex items-center justify-center rounded-full border border-white/5 bg-white/5 text-white/20 transition-all group-hover:bg-[#ffd88d] group-hover:text-[#4b1d08] group-hover:border-transparent opacity-0 group-hover:opacity-100">
+                <ArrowRight size={16} />
+              </button>
             </div>
           ))
         )}
+      </div>
+
+      <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
+         <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20">System_Auto_Sort_Engaged</span>
+         <div className="flex gap-1">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-1 w-4 rounded-full bg-white/5" />
+            ))}
+         </div>
       </div>
     </div>
   );

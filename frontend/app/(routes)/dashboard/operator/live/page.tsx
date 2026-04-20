@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
+import { LayoutDashboard, Radio, MapPin, Activity } from "lucide-react";
 
 type Token = { id: string; number: number; status: string };
 
@@ -121,7 +122,6 @@ export default function OperatorLiveQueuesPage() {
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Unable to load queues";
-      console.error("Failed to load queues", err);
       setQueueListError(message);
     } finally {
       setLoadingQueues(false);
@@ -270,7 +270,6 @@ export default function OperatorLiveQueuesPage() {
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to load queue";
-      console.error("Failed to load queue", err);
       setError(message);
     } finally {
       setLoadingQueue(false);
@@ -309,7 +308,7 @@ export default function OperatorLiveQueuesPage() {
         );
       }
       await loadSelectedQueue();
-      toast.success("Queue updated successfully.");
+      toast.success("Sync successful.");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Action failed";
       setError(message);
@@ -325,14 +324,14 @@ export default function OperatorLiveQueuesPage() {
   const extendToken = () => {
     if (!nowServing) return;
     apiService.extendToken(nowServing.id, 2).then(() => {
-      toast.success("Extended by 2 minutes");
+      toast.success("Time extended.");
       loadSelectedQueue();
     }).catch(e => toast.error(e.message));
   };
   const markNoShow = () => {
     if (!nowServing) return;
     apiService.markNoShow(nowServing.id).then(() => {
-      toast.success("Marked as No-Show");
+      toast.success("Entry marked.");
       loadSelectedQueue();
     }).catch(e => toast.error(e.message));
   };
@@ -344,194 +343,142 @@ export default function OperatorLiveQueuesPage() {
   if (loadingQueues) {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-sky-600"></div>
+        <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-[#ffd88d]" />
       </div>
     );
   }
 
   if (queueListError) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
-        {queueListError}
-      </div>
-    );
-  }
-
-  if (queues.length === 0) {
-    return (
-      <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center shadow-sm">
-        <h2 className="text-xl font-semibold text-slate-900 mb-2">
-          No queues yet
-        </h2>
-        <p className="text-slate-600 mb-6">
-          Create a queue to start serving users.
-        </p>
-        <Link
-          href="/dashboard/operator/create"
-          className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-sky-600 text-white font-semibold shadow hover:bg-sky-700 transition-colors"
-        >
-          Create a queue
-        </Link>
+      <div className="rounded-3xl border border-red-500/20 bg-red-500/5 p-8 text-center max-w-2xl mx-auto mt-20">
+        <p className="text-[11px] font-black uppercase tracking-widest text-red-500">{queueListError}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-slate-100">
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, rgba(15,23,42,0.1) 1px, transparent 1px)`,
-            backgroundSize: "40px 40px",
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 p-4 md:p-6 lg:p-8">
-        <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="text-left">
-              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
-                Live Queues
-              </h1>
-              <p className="text-slate-600 text-lg">
-                Switch between active queues without leaving the dashboard.
-              </p>
-            </div>
-            <Link
-              href="/dashboard/operator/queues"
-              className="inline-flex items-center justify-center px-4 py-2 rounded-lg border border-slate-200 text-slate-700 font-semibold hover:bg-white transition-colors"
-            >
-              View all queues
-            </Link>
-          </div>
-
+    <div className="min-h-screen animate-in fade-in duration-700">
+      <div className="max-w-7xl mx-auto px-4 py-12 md:px-8">
+        <header className="mb-14 flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-white/8 pb-10">
           <div>
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-                Active queues
-              </h2>
-              <span className="text-xs text-slate-400">
-                {activeQueues.length} active
-              </span>
-            </div>
-            <div className="flex gap-4 overflow-x-auto pb-2">
-              {activeQueues.map((queueItem) => {
-                const metrics = queueMetrics[queueItem.id];
-                const isSelected = queueItem.id === selectedQueueId;
-                return (
-                  <button
-                    key={queueItem.id}
-                    onClick={() => setSelectedQueueId(queueItem.id)}
-                    className={`min-w-[220px] text-left bg-white border rounded-2xl p-4 shadow-sm transition-all ${isSelected
-                      ? "border-sky-500 ring-2 ring-sky-200"
-                      : "border-slate-200 hover:shadow-md"
-                      }`}
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="text-base font-semibold text-slate-900">
-                          {queueItem.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 flex items-center gap-1">
-                          <span>📍</span>
-                          {queueItem.location}
-                        </p>
-                      </div>
-                      <span className="text-[10px] uppercase font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                        Live
-                      </span>
-                    </div>
-                    <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                      <div className="bg-slate-50 rounded-lg p-2">
-                        <p className="text-slate-500">Waiting</p>
-                        <p className="text-slate-900 font-semibold text-sm">
-                          {metrics ? metrics.waitingCount : "—"}
-                        </p>
-                      </div>
-                      <div className="bg-slate-50 rounded-lg p-2">
-                        <p className="text-slate-500">Now Serving</p>
-                        <p className="text-slate-900 font-semibold text-sm">
-                          {metrics?.nowServing ?? "—"}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
+            <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d]">
+              Live Feed
+            </span>
+            <h1 className="mt-2 text-5xl font-bold uppercase tracking-tighter text-white">
+              Terminal <span className="font-serif font-light italic lowercase text-[#ffe2b5]/70">sync.</span>
+            </h1>
+          </div>
+          <Link
+            href="/dashboard/operator/queues"
+            className="group flex items-center gap-3 rounded-full border border-white/10 bg-white/8 px-6 py-3 transition-all hover:border-[#ffd88d]/40 hover:bg-white/12"
+          >
+            <LayoutDashboard className="h-4 w-4 text-[#ffd88d]" />
+            <span className="text-[10px] font-bold uppercase tracking-widest text-white">Registry View</span>
+          </Link>
+        </header>
+
+        <section className="mb-16">
+          <div className="flex items-center justify-between mb-6 px-1">
+            <div className="flex items-center gap-3">
+              <Radio className="h-3 w-3 text-[#ffd88d] animate-pulse" />
+              <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ffe2b5]/40">Active Nodes</h2>
             </div>
           </div>
+          <div className="flex gap-6 overflow-x-auto pb-6 scrollbar-hide">
+            {activeQueues.map((queueItem) => {
+              const metrics = queueMetrics[queueItem.id];
+              const isSelected = queueItem.id === selectedQueueId;
+              return (
+                <button
+                  key={queueItem.id}
+                  onClick={() => setSelectedQueueId(queueItem.id)}
+                  className={`min-w-[280px] text-left theme-card-elevated rounded-[2rem] p-6 transition-all relative ${
+                    isSelected ? "border-[#ffd88d]/40 bg-[#ffd88d]/5 shadow-[0_12px_32px_rgba(255,216,141,0.1)]" : "hover:border-white/20"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h3 className={`text-lg font-bold uppercase tracking-tight transition-colors ${isSelected ? 'text-[#ffd88d]' : 'text-white'}`}>
+                        {queueItem.name}
+                      </h3>
+                      <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 flex items-center gap-1">
+                        <MapPin size={10} />
+                        {queueItem.location}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-8 grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl border border-white/5 bg-white/3 p-3 text-center">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-white/30 mb-1">Queue</p>
+                      <p className="text-xl font-bold tracking-tighter text-[#ffe2b5]">
+                        {metrics ? metrics.waitingCount : "—"}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-white/5 bg-white/3 p-3 text-center">
+                      <p className="text-[8px] font-black uppercase tracking-widest text-white/30 mb-1">Active</p>
+                      <p className="text-xl font-bold tracking-tighter text-[#ffe2b5]">
+                        {metrics?.nowServing ?? "—"}
+                      </p>
+                    </div>
+                  </div>
+                  {isSelected && (
+                    <div className="absolute top-6 right-6 h-1 w-1 rounded-full bg-[#ffd88d] shadow-[0_0_8px_rgba(255,216,141,0.8)]" />
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="mb-10 rounded-2xl border border-red-500/20 bg-red-500/5 p-6 flex items-center gap-4 animate-in fade-in slide-in-from-top-2">
+            <p className="text-[10px] font-black uppercase tracking-widest text-red-500">{error}</p>
+          </div>
+        )}
 
-          {loadingQueue ? (
-            <div className="flex justify-center items-center min-h-[40vh]">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-600"></div>
+        {loadingQueue ? (
+          <div className="flex justify-center items-center min-h-[40vh]">
+            <div className="h-10 w-10 animate-spin rounded-full border-b-2 border-[#ffd88d]" />
+          </div>
+        ) : !queue ? (
+          <div className="p-20 text-center theme-card-elevated rounded-[3rem]">
+             <h2 className="text-2xl font-bold uppercase text-white/20">Node_Offline</h2>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { label: "Waiting Seq", val: waitingTokens.length, icon: <Activity className="text-[#ffd88d]" /> },
+                { label: "Logic Hub", val: queue.status.toUpperCase(), icon: <Radio className="text-[#ffd88d]" /> },
+                { label: "Currently Addressing", val: nowServing ? nowServing.number : "NONE", icon: <LayoutDashboard className="text-[#ffd88d]" /> },
+                { label: "Terminal Cap", val: queue.capacity ?? "—", icon: <MapPin className="text-[#ffd88d]" />, sub: queue.isFull ? "CAP_REACHED" : "SYNCING" }
+              ].map((m, i) => (
+                <div key={i} className="theme-card-elevated rounded-[2.2rem] p-8 group transition-all hover:border-[#ffd88d]/20">
+                  <div className="flex items-center gap-3 mb-4">
+                     <span className="p-2 rounded-xl bg-white/5 border border-white/5">{m.icon}</span>
+                     <span className="text-[9px] font-black uppercase tracking-widest text-white/40">{m.label}</span>
+                  </div>
+                  <div className="text-3xl font-bold tracking-tighter text-[#ffe2b5]">
+                    {m.val}
+                  </div>
+                  {m.sub && (
+                    <div className={`mt-2 text-[8px] font-black uppercase tracking-[0.3em] ${m.sub === 'CAP_REACHED' ? 'text-red-500' : 'text-green-500'}`}>
+                      {m.sub}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          ) : !queue ? (
-            <div className="p-8 text-center text-red-500">Queue not found.</div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <div className="text-sm font-medium text-slate-600">
-                    Waiting
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">
-                    {waitingTokens.length}
-                  </div>
-                </div>
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <div className="text-sm font-medium text-slate-600">
-                    Queue Status
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1 capitalize">
-                    {queue.status.toLowerCase()}
-                  </div>
-                </div>
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <div className="text-sm font-medium text-slate-600">
-                    Now Serving
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">
-                    {nowServing ? nowServing.number : "None"}
-                  </div>
-                </div>
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                  <div className="text-sm font-medium text-slate-600">
-                    Capacity
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">
-                    {queue.capacity ?? "—"}
-                  </div>
-                  <div
-                    className={`text-sm mt-1 ${queue.isFull ? "text-red-600" : "text-green-600"
-                      }`}
-                  >
-                    {queue.isFull ? "Full" : "Accepting"}
-                  </div>
-                </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <div className="lg:col-span-4 space-y-8">
+                <OperatorHeader queue={queue} status={queue.status} />
+                <NowServingCard token={nowServing} />
               </div>
 
-              {queue.isFull && (
-                <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-3">
-                  Queue is full. New joins are blocked until capacity frees up.
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-                <div className="lg:col-span-1 space-y-6">
-                  <OperatorHeader queue={queue} status={queue.status} />
-                  <NowServingCard token={nowServing} />
-                </div>
-
-                <div className="lg:col-span-2 space-y-6">
-                  <TokenList tokens={waitingTokens} />
+              <div className="lg:col-span-8 space-y-8">
+                <TokenList tokens={waitingTokens} />
+                <div className="relative">
                   <OperatorControls
                     onServeNext={serveNext}
                     onSkip={skipToken}
@@ -542,15 +489,15 @@ export default function OperatorLiveQueuesPage() {
                     queueStatus={queue.status}
                   />
                   {actionLoading && (
-                    <p className="text-sm text-slate-500">
-                      Processing {actionLoading.replace("-", " ")}...
-                    </p>
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] rounded-[2rem] flex items-center justify-center z-20">
+                       <span className="text-[10px] font-black uppercase tracking-[0.5em] text-[#ffd88d] animate-pulse">Syncing_Command...</span>
+                    </div>
                   )}
                 </div>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

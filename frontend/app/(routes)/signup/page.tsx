@@ -85,8 +85,24 @@ export default function SignupPage() {
         requestBody.position = position;
       }
 
-      await apiService.post("/auth/register", requestBody, false);
-      router.push(`/verify-email?email=${encodeURIComponent(email)}`);
+      const data = await apiService.post("/auth/register", requestBody, false);
+      const verifyParams = new URLSearchParams({
+        email,
+      });
+
+      if (data.message) {
+        verifyParams.set("info", data.message);
+      }
+
+      if (data.emailDelivery === "failed" && data.emailError) {
+        verifyParams.set("deliveryError", data.emailError);
+      }
+
+      if (data.devOtpPreview) {
+        verifyParams.set("devOtp", data.devOtpPreview);
+      }
+
+      router.push(`/verify-email?${verifyParams.toString()}`);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Unable to create account.");
     } finally {

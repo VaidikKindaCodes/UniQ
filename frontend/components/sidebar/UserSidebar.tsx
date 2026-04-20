@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
 export default function UserSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
 
   const isActive = (href: string) => {
@@ -102,7 +102,7 @@ export default function UserSidebar() {
                   <span className="text-[10px] font-bold uppercase tracking-[0.25em]">
                     {item.label}
                   </span>
-
+  
                   {active && (
                     <ChevronRight size={14} className="ml-auto opacity-50" />
                   )}
@@ -110,6 +110,17 @@ export default function UserSidebar() {
               );
             })}
           </nav>
+          {(user?.email === "gargmishti9@gmail.com" || isAdmin) && (
+            <div className="px-6 mb-2 relative z-10">
+              <Link
+                href="/admin"
+                className="group flex w-full items-center gap-4 rounded-2xl border border-[#ffd88d]/10 bg-[#ffd88d]/5 px-6 py-4 text-[#ffd88d] transition-all duration-300 hover:border-[#ffd88d]/30 hover:bg-[#ffd88d]/10"
+              >
+                <LayoutDashboard size={18} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Admin Terminal</span>
+              </Link>
+            </div>
+          )}
           <div className="p-6 border-t border-white/5 relative z-10">
             <button
               onClick={() => {
