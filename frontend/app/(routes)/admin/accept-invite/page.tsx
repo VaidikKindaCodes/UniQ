@@ -4,9 +4,28 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../../../context/AuthContext";
-import Footer from "../../../../components/footer/Footer";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { ArrowRight, Lock, ShieldCheck, User } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+function BrandMark() {
+  return (
+    <Link href="/" className="flex items-center gap-3">
+      <div className="flex h-10 w-10 items-center justify-center rounded-sm border border-white/20 bg-white/10 text-sm font-black text-white">
+        U
+      </div>
+      <div>
+        <span className="block text-xl font-semibold uppercase tracking-[0.24em] text-white">
+          UNIQ
+        </span>
+        <span className="block text-[10px] uppercase tracking-[0.38em] text-[#ffe2b5]/78">
+          Campus Flow
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 export default function AcceptInvitePage() {
   const [name, setName] = useState("");
@@ -52,19 +71,20 @@ export default function AcceptInvitePage() {
         body: JSON.stringify({ email, token, name, password }),
       });
 
-      const data = await response.json();
+      const data = (await response.json()) as {
+        message?: string;
+        token: string;
+        user: unknown;
+      };
 
       if (!response.ok) {
         throw new Error(data.message || "Failed to accept invite");
       }
 
-      // Login the user directly
       login(data.token, data.user);
-
-      // Redirect to admin dashboard
       router.replace("/admin");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to accept invite");
     } finally {
       setIsLoading(false);
     }
@@ -72,104 +92,155 @@ export default function AcceptInvitePage() {
 
   if (!token || !email) {
     return (
-       <main className="min-h-screen bg-slate-50 text-slate-900 flex items-center justify-center">
-         <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md w-full text-center">
-           <h1 className="text-2xl font-bold text-red-600 mb-4">Invalid Invitation</h1>
-           <p className="text-slate-600 mb-6">The invitation link is missing required information.</p>
-           <Link href="/login" className="text-sky-600 hover:underline">Go to Login</Link>
-         </div>
-       </main>
-    )
+      <main className="app-shell flex min-h-screen items-center justify-center px-4">
+        <div className="dashboard-panel-dark max-w-md w-full rounded-[2rem] p-8 text-center text-white">
+          <h1 className="mb-4 text-2xl font-bold text-red-300">Invalid Invitation</h1>
+          <p className="mb-6 text-[#ffe2b5]/72">
+            The invitation link is missing required information.
+          </p>
+          <Link href="/login" className="text-[#ffd88d] hover:text-white">
+            Go to Login
+          </Link>
+        </div>
+      </main>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-900 scroll-smooth">
-      {/* Landing Page Navbar - simplified */}
-      <nav className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/80 backdrop-blur relative">
-        <div className="mx-auto max-w-6xl px-4 py-3 sm:px-6">
-          <div className="flex items-center justify-between relative z-30">
-            <Link href="/" className="flex items-center gap-3 group">
-              <img
-                src="/logo/LOGO.svg"
-                alt="CampusOR logo"
-                className="h-11 w-auto object-contain md:h-14"
-              />
+    <main className="min-h-screen overflow-x-hidden bg-[#180902] text-white">
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(243,162,0,0.26),_transparent_30%),linear-gradient(180deg,_#8d390d_0%,_#4b1d08_45%,_#180902_100%)]" />
+        <div className="absolute left-[-8%] bottom-[8%] h-[24rem] w-[24rem] rounded-full bg-[#ffd88d]/12 blur-3xl" />
+        <div className="absolute right-[-4%] top-[10%] h-[20rem] w-[20rem] rounded-full bg-[#7a2f0d]/26 blur-3xl" />
+      </div>
+
+      <nav className="relative z-20 border-b border-white/8 backdrop-blur-md">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 md:px-12">
+          <BrandMark />
+          <div className="flex items-center gap-3 md:gap-5">
+            <ThemeToggle />
+            <Link
+              href="/login"
+              className="rounded-full border border-white/12 bg-white/6 px-5 py-2.5 text-sm font-semibold text-[#ffe2b5] transition-all hover:bg-white/10"
+            >
+              Back to login
             </Link>
           </div>
         </div>
       </nav>
 
-      <div className="min-h-[calc(100vh-200px)] flex items-center justify-center px-4 py-8">
-        <form
-          onSubmit={handleAccept}
-          className="w-full max-w-md bg-white rounded-2xl border border-slate-200 shadow-xl p-8 transition-all duration-300 hover:shadow-2xl animate-in fade-in zoom-in"
-        >
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-semibold text-slate-900 mb-2">
-              Accept Admin Invitation
+      <div className="relative z-10 mx-auto grid min-h-[calc(100vh-89px)] max-w-7xl items-center gap-10 px-6 py-12 md:px-12 lg:grid-cols-[0.95fr_1.05fr]">
+        <section className="hidden lg:block">
+          <div className="max-w-xl space-y-8">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-2 text-[11px] uppercase tracking-[0.34em] text-[#ffe2b5]">
+              <ShieldCheck className="h-3.5 w-3.5 text-[#ffd88d]" />
+              Admin onboarding
+            </div>
+            <h1 className="text-6xl font-semibold leading-[0.9] tracking-[-0.05em] text-white">
+              Accept your invitation.
+              <span className="block text-[#ffd88d]">Set up admin access with one final step.</span>
             </h1>
-            <p className="text-sm text-slate-500">
-               Setting up account for <span className="font-medium text-slate-700">{email}</span>
+            <p className="max-w-lg text-base leading-8 text-[#ffe2b5]/74">
+              Complete your profile and secure your credentials to enter the admin workspace with the right permissions.
             </p>
           </div>
+        </section>
 
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
-                <input
-                    type="text"
-                    placeholder="John Doe"
-                    className="w-full border border-slate-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Passowrd</label>
-                <input
-                    type="password"
-                    placeholder="Create a strong password"
-                    className="w-full border border-slate-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                />
-            </div>
-
-            <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Confirm Password</label>
-                <input
-                    type="password"
-                    placeholder="Confirm your password"
-                    className="w-full border border-slate-300 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 transition-colors"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
-                    minLength={6}
-                />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full mt-6 bg-sky-600 hover:bg-sky-700 text-white py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
+        <section className="mx-auto w-full max-w-xl">
+          <form
+            onSubmit={handleAccept}
+            className="dashboard-panel-dark relative overflow-hidden rounded-[2.2rem] p-8 shadow-[0_24px_80px_rgba(0,0,0,0.24)] sm:p-12"
           >
-            {isLoading ? "Setting up account..." : "Complete Setup"}
-          </button>
-        </form>
-      </div>
+            <div className="absolute right-0 top-0 h-40 w-40 bg-[#ffd88d]/8 blur-[90px]" />
 
-      <Footer />
+            <div className="mb-8 text-center">
+              <p className="text-[9px] font-bold uppercase tracking-[0.5em] text-[#ffd88d]">
+                Admin Invitation
+              </p>
+              <h1 className="mt-4 text-4xl font-bold text-white sm:text-5xl">
+                Complete setup
+              </h1>
+              <p className="mt-3 text-sm text-[#ffe2b5]/74">
+                Setting up account for <span className="font-semibold text-white">{email}</span>
+              </p>
+            </div>
+
+            {error && (
+              <div className="mb-4 rounded-[1.2rem] border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <Field label="Full Name" icon={<User className="h-4 w-4 text-[#ffd88d]" />}>
+                <input
+                  type="text"
+                  placeholder="John Doe"
+                  className="w-full rounded-[1.2rem] border border-white/10 bg-white/8 px-4 py-3 pl-11 text-[#fff4df] placeholder:text-[#d7a666] focus:border-[#ffd88d] focus:outline-none"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </Field>
+
+              <Field label="Password" icon={<Lock className="h-4 w-4 text-[#ffd88d]" />}>
+                <input
+                  type="password"
+                  placeholder="Create a strong password"
+                  className="w-full rounded-[1.2rem] border border-white/10 bg-white/8 px-4 py-3 pl-11 text-[#fff4df] placeholder:text-[#d7a666] focus:border-[#ffd88d] focus:outline-none"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+              </Field>
+
+              <Field label="Confirm Password" icon={<Lock className="h-4 w-4 text-[#ffd88d]" />}>
+                <input
+                  type="password"
+                  placeholder="Confirm your password"
+                  className="w-full rounded-[1.2rem] border border-white/10 bg-white/8 px-4 py-3 pl-11 text-[#fff4df] placeholder:text-[#d7a666] focus:border-[#ffd88d] focus:outline-none"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={6}
+                />
+              </Field>
+            </div>
+
+            <button
+              type="submit"
+              className="mt-6 flex w-full items-center justify-center gap-3 rounded-[1.4rem] bg-[#ffd88d] py-4 font-semibold text-[#4b1d08] transition-all hover:bg-[#f1bf63] disabled:cursor-not-allowed disabled:opacity-50"
+              disabled={isLoading}
+            >
+              {isLoading ? "Setting up account..." : "Complete Setup"}
+              {!isLoading && <ArrowRight className="h-4 w-4" />}
+            </button>
+          </form>
+        </section>
+      </div>
     </main>
+  );
+}
+
+function Field({
+  label,
+  icon,
+  children,
+}: {
+  label: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-[#fff4df]">{label}</label>
+      <div className="relative">
+        <div className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2">
+          {icon}
+        </div>
+        {children}
+      </div>
+    </div>
   );
 }

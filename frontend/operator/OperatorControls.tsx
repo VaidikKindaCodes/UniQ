@@ -1,3 +1,5 @@
+import { Play, SkipForward, UserX, Clock, Bell, Settings2 } from "lucide-react";
+
 type Props = {
   onServeNext: () => void;
   onSkip: () => void;
@@ -18,69 +20,77 @@ export default function OperatorControls({
   queueStatus,
 }: Props) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-bold text-slate-800">
-          Queue Controls
-        </h3>
+    <div className="theme-card-elevated rounded-[2.5rem] p-8 shadow-2xl relative overflow-hidden">
+      <div className="absolute top-0 right-0 h-40 w-40 bg-[#ffd88d]/5 blur-[60px] pointer-events-none" />
+      
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-10 relative z-10">
+        <div>
+          <h3 className="text-2xl font-bold uppercase tracking-tighter text-white">
+            Node Logic <span className="font-serif font-light italic lowercase text-[#ffe2b5]/60">controls.</span>
+          </h3>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mt-1">Manual protocol overrides</p>
+        </div>
         <button
           onClick={onToggleQueue}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${queueStatus === "ACTIVE"
-            ? "bg-red-50 text-red-600 hover:bg-red-100 border border-red-200"
-            : "bg-green-50 text-green-600 hover:bg-green-100 border border-green-200"
-            }`}
+          className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${
+            queueStatus === "ACTIVE"
+              ? "bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white"
+              : "bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500 hover:text-white"
+          }`}
         >
-          {queueStatus === "ACTIVE" ? "Pause Queue" : "Resume Queue"}
+          <Settings2 size={12} />
+          {queueStatus === "ACTIVE" ? "Suspend Node" : "Activate Node"}
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Primary Action */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10">
         <button
           onClick={onServeNext}
-          className="col-span-1 md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-xl flex items-center justify-center gap-2 font-semibold shadow-sm hover:shadow transition-all group"
+          className="col-span-1 md:col-span-2 flex items-center justify-center gap-4 rounded-[1.6rem] bg-[#ffd88d] p-6 text-[11px] font-black uppercase tracking-[0.4em] text-[#4b1d08] shadow-[0_20px_40px_rgba(255,216,141,0.15)] transition-all hover:scale-[1.02] active:scale-95 group"
         >
-          <span className="text-lg">Serve Next</span>
-          <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+          Serve Next Sequence <Play size={18} fill="currentColor" className="group-hover:translate-x-1 transition-transform" />
         </button>
 
-        {/* Secondary Actions */}
         <button
           onClick={onExtend}
-          className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-3 rounded-[1.6rem] border border-white/5 bg-white/5 p-6 transition-all hover:bg-white/10 hover:border-[#ffd88d]/30 group"
         >
-          <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          <span className="text-sm">Extend Timer</span>
+          <Clock size={20} className="text-[#ffd88d] group-hover:scale-110 transition-transform" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-[#ffe2b5]/70">Extend Term</span>
         </button>
 
         <button
           onClick={onRecall}
-          className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-3 rounded-[1.6rem] border border-white/5 bg-white/5 p-6 transition-all hover:bg-white/10 hover:border-[#ffd88d]/30 group"
         >
-          <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
-          <span className="text-sm">Recall User</span>
+          <Bell size={20} className="text-[#ffd88d] group-hover:rotate-12 transition-transform" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-[#ffe2b5]/70">Broad_Recall</span>
         </button>
 
         <button
           onClick={onSkip}
-          className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-3 rounded-[1.6rem] border border-white/5 bg-white/5 p-6 transition-all hover:bg-white/10 hover:border-[#ffd88d]/30 group"
         >
-          <svg className="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
-          <span className="text-sm">Skip</span>
+          <SkipForward size={20} className="text-white/40 group-hover:translate-x-1 transition-transform" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-[#ffe2b5]/70">Shift_Seq</span>
         </button>
 
         <button
           onClick={onNoShow}
-          className="bg-slate-50 hover:bg-red-50 text-slate-700 hover:text-red-700 border border-slate-200 hover:border-red-200 p-4 rounded-xl flex flex-col items-center justify-center gap-1 font-medium transition-colors"
+          className="flex flex-col items-center justify-center gap-3 rounded-[1.6rem] border border-white/5 bg-white/5 p-6 transition-all border-red-500/10 hover:bg-red-500/10 hover:border-red-500/30 group"
         >
-          <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
-          <span className="text-sm">Mark No-Show</span>
+          <UserX size={20} className="text-red-500/60 group-hover:scale-110 transition-transform" />
+          <span className="text-[9px] font-black uppercase tracking-widest text-red-500/60">Mark_NULL</span>
         </button>
       </div>
 
-      <div className="mt-6 flex items-center gap-2 text-sm text-slate-500 px-2">
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-        <span>Managing the queue? Use &quot;Serve Next&quot; to call the next person.</span>
+      <div className="mt-10 flex items-center gap-3 rounded-2xl bg-white/5 p-4 border border-white/5 relative z-10">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/5 text-[#ffd88d]">
+           <Settings2 size={14} />
+        </div>
+        <span className="text-[8px] font-black uppercase tracking-[0.3em] text-[#ffe2b5]/40 leading-relaxed">
+           Managing the master branch? Trigger &quot;Serve Next&quot; to initiate the next waiting node in the sequence.
+        </span>
       </div>
     </div>
   );

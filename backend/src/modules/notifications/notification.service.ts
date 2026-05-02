@@ -1,5 +1,5 @@
 import {Types} from "mongoose";
-import { Notification,NotificationType } from "./Notification.model.js";
+import { Notification,NotificationType } from "./notification.model.js";
 
 type CreateNotificationInput = {
     userId: string;

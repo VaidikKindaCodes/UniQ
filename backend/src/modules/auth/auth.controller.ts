@@ -40,7 +40,7 @@ export const register = async (req: Request, res: Response) => {
       });
     }
 
-    const user = await registerUser({ 
+    const result = await registerUser({ 
       name, 
       email, 
       password, 
@@ -52,8 +52,13 @@ export const register = async (req: Request, res: Response) => {
 
     return res.status(201).json({
       success: true,
-      message: "OTP sent to your email",
-      email: user.email,
+      message: result.otpDispatch.delivered
+        ? "OTP sent to your email"
+        : "Account created, but OTP email could not be delivered.",
+      email: result.user.email,
+      emailDelivery: result.otpDispatch.delivered ? "sent" : "failed",
+      emailError: result.otpDispatch.error,
+      devOtpPreview: result.otpDispatch.devOtpPreview,
     });
   } catch (error: any) {
     const status = error instanceof AuthError ? error.status : 400;
@@ -143,6 +148,9 @@ export const resendOtp = async (req: Request, res: Response) => {
     return res.status(200).json({
       success: true,
       ...result,
+      emailDelivery: result.otpDispatch.delivered ? "sent" : "failed",
+      emailError: result.otpDispatch.error,
+      devOtpPreview: result.otpDispatch.devOtpPreview,
     });
   } catch (error: any) {
     const status = error instanceof AuthError ? error.status : 400;

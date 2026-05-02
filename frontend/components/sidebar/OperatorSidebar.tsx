@@ -1,15 +1,20 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import {
   Activity,
   LayoutDashboard,
-  List,
   LogOut,
   PlayCircle,
   User,
+  Menu,
+  X,
+  Cpu,
+  Radio,
 } from "lucide-react";
 import { useAuth } from "@/app/context/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { apiService } from "@/app/services/api";
 import { useEffect, useMemo, useState } from "react";
 
@@ -20,22 +25,25 @@ type SidebarQueue = {
   location: string;
 };
 
+const navItems = [
+  { href: "/dashboard/operator/queues", label: "All Queues", icon: <LayoutDashboard size={18} /> },
+  { href: "/dashboard/operator/live", label: "Live Queues", icon: <PlayCircle size={18} /> },
+  { href: "/dashboard/operator/create", label: "Create Queue", icon: <Activity size={18} /> },
+  { href: "/profile", label: "Profile", icon: <User size={18} /> },
+];
+
 export default function OperatorSidebar() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { logout } = useAuth();
+  const { logout, user, isAdmin } = useAuth();
   const [queues, setQueues] = useState<SidebarQueue[]>([]);
   const [queueError, setQueueError] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const selectedQueueId = searchParams.get("queueId");
-  const linkStyle = (href: string) => {
-    const isActive = pathname === href || pathname.startsWith(`${href}/`);
-    return `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-      isActive
-        ? "bg-blue-600 text-white shadow-md"
-        : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-    }`;
-  };
+
+  const isActive = (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+
   useEffect(() => {
     let active = true;
     const loadQueues = async () => {
@@ -44,110 +52,151 @@ export default function OperatorSidebar() {
         const parsed = Array.isArray(data)
           ? data
           : data?.queues || data?.data?.queues || [];
-        if (active) {
-          setQueues(parsed);
-        }
+        if (active) setQueues(parsed);
       } catch (error) {
-        console.error("Failed to load sidebar queues", error);
-        if (active) {
-          setQueueError(true);
-        }
+        if (active) setQueueError(true);
       }
     };
-
     loadQueues();
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
   const activeQueues = useMemo(
     () => queues.filter((queue) => queue.status === "ACTIVE"),
     [queues]
   );
-  return (
-    <aside className="w-48 sm:w-64 h-screen bg-white border-r border-gray-200 flex flex-col fixed left-0 top-0 z-50">
-      <div className="p-4 sm:p-6">
-        <h1 className="text-lg sm:text-xl font-bold text-gray-900 tracking-tight">
-          Ops<span className="hidden sm:inline">Portal</span>
-        </h1>
-      </div>
-      <nav className="flex-1 px-4 space-y-1">
-        <Link
-          href="/dashboard/operator/queues"
-          className={linkStyle("/dashboard/operator/queues")}
-        >
-          <LayoutDashboard size={20} />
-          <span className="font-medium text-sm sm:text-base">All Queues</span>
-        </Link>
-        <Link
-          href="/dashboard/operator/live"
-          className={linkStyle("/dashboard/operator/live")}
-        >
-          <PlayCircle size={20} />
-          <span className="font-medium text-sm sm:text-base">Live Queues</span>
-        </Link>
-        <Link
-          href="/dashboard/operator/create"
-          className={linkStyle("/dashboard/operator/create")}
-        >
-          <Activity size={20} />
-          <span className="font-medium text-sm sm:text-base">Create Queue</span>
-        </Link>
-        <Link href="/profile" className={linkStyle("/profile")}>
-          <User size={20} />
-          <span className="font-medium text-sm sm:text-base">Profile</span>
-        </Link>
 
-        <div className="pt-4">
-          <div className="flex items-center gap-2 px-3 text-xs font-semibold uppercase tracking-wide text-slate-400">
-            <List size={14} />
-            Queue Switcher
+  return (
+    <>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="theme-card-elevated fixed top-4 left-4 z-50 p-3 lg:hidden shadow-[0_0_15px_rgba(0,0,0,0.25)]"
+      >
+        {isOpen ? <X size={20} className="text-[var(--surface-rust)]" /> : <Menu size={20} />}
+      </button>
+      {isOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-[#180902]/70 backdrop-blur-md lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+      <aside
+        className={`sidebar-shell fixed inset-y-0 left-0 z-40 w-72 border-r border-white/10 transform transition-transform duration-500 ease-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        <div className="flex h-full flex-col">
+          <div className="p-8 border-b border-white/5">
+            <div className="flex items-center justify-between mb-8">
+              <Link href="/" className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-white/18 bg-white/10 text-xs font-black text-white">
+                  U
+                </div>
+                <div>
+                  <span className="block text-lg font-semibold uppercase tracking-[0.24em] text-white">UNIQ</span>
+                  <span className="block text-[9px] uppercase tracking-[0.34em] text-[#ffe2b5]/80">Operator Flow</span>
+                </div>
+              </Link>
+              <ThemeToggle />
+            </div>
+            <div className="flex items-center gap-2">
+              <Cpu size={12} className="text-[#ffd88d]" />
+              <p className="text-[9px] font-black uppercase tracking-[0.3em] text-white/66">
+                Operator Portal
+              </p>
+            </div>
           </div>
-          {queueError ? (
-            <p className="px-3 mt-2 text-xs text-red-500">
-              Unable to load queues
-            </p>
-          ) : activeQueues.length === 0 ? (
-            <p className="px-3 mt-2 text-xs text-slate-400">No active queues</p>
-          ) : (
-            <div className="mt-2 space-y-1">
-              {activeQueues.map((queue) => {
-                const isSelected = selectedQueueId === queue.id;
-                return (
-                  <Link
-                    key={queue.id}
-                    href={`/dashboard/operator/live?queueId=${queue.id}`}
-                    className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                      isSelected
-                        ? "bg-sky-100 text-sky-700"
-                        : "text-slate-600 hover:bg-slate-100"
-                    }`}
-                  >
-                    <span className="truncate">{queue.name}</span>
-                    <span className="text-[10px] text-slate-400">Live</span>
-                  </Link>
-                );
-              })}
+          <nav className="flex-1 px-4 py-8 space-y-1">
+            <p className="mb-4 px-4 text-[8px] font-black uppercase tracking-[0.4em] text-white/42">Core Modules</p>
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl border px-4 py-3 transition-all duration-300 ${
+                    active
+                      ? "border-[#ffd88d]/20 bg-white/10 text-white shadow-[inset_0_0_10px_rgba(255,216,141,0.08)]"
+                      : "border-transparent text-white/62 hover:bg-white/8 hover:text-white"
+                  }`}
+                >
+                  <span className={`${active ? "text-[#ffd88d]" : "text-white/44 group-hover:text-[#ffd88d]"}`}>
+                    {item.icon}
+                  </span>
+                  <span className="text-[11px] font-black uppercase tracking-widest transition-colors">
+                    {item.label}
+                  </span>
+                  {active && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#ffd88d]" />}
+                </Link>
+              );
+            })}
+            <div className="pt-10">
+              <div className="flex items-center justify-between px-4 mb-4">
+                <p className="text-[8px] font-black uppercase tracking-[0.4em] text-white/42">Live Terminals</p>
+                <Radio size={10} className="text-[#ffd88d] animate-pulse" />
+              </div>
+
+              <div className="space-y-1 max-h-75 overflow-y-auto custom-scrollbar">
+                {queueError ? (
+                  <p className="px-4 text-[10px] font-mono text-red-500/60 uppercase">System Error_</p>
+                ) : activeQueues.length === 0 ? (
+                  <p className="px-4 text-[10px] font-mono text-white/46 uppercase">No active nodes_</p>
+                ) : (
+                  activeQueues.map((queue) => {
+                    const isSelected = selectedQueueId === queue.id;
+                    return (
+                      <Link
+                        key={queue.id}
+                        href={`/dashboard/operator/live?queueId=${queue.id}`}
+                        onClick={() => setIsOpen(false)}
+                        className={`group flex flex-col gap-1 rounded-2xl px-4 py-4 border transition-all ${
+                          isSelected
+                            ? "border-[#ffd88d]/18 bg-white/10"
+                            : "border-transparent hover:bg-white/6"
+                        }`}
+                      >
+                        <span className={`truncate text-[10px] font-bold uppercase tracking-tight ${isSelected ? 'text-white' : 'text-white/64'}`}>
+                          {queue.name}
+                        </span>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[7px] font-mono uppercase tracking-widest text-white/42">{queue.location.slice(0, 15)}</span>
+                          {isSelected && (
+                            <span className="text-[7px] font-black text-[#ffd88d] uppercase tracking-widest animate-pulse">Connected</span>
+                          )}
+                        </div>
+                      </Link>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          </nav>
+          {(user?.email === "gargmishti9@gmail.com" || isAdmin) && (
+            <div className="px-6 mb-2">
+              <Link
+                href="/admin"
+                className="group flex w-full items-center gap-4 rounded-2xl border border-[#ffd88d]/10 bg-[#ffd88d]/5 px-4 py-3 text-[#ffd88d] transition-all duration-300 hover:border-[#ffd88d]/30 hover:bg-[#ffd88d]/10"
+              >
+                <LayoutDashboard size={18} />
+                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Admin Terminal</span>
+              </Link>
             </div>
           )}
+          <div className="p-6 border-t border-white/5 bg-black/20">
+            <button
+              onClick={() => {
+                logout();
+                router.push("/login");
+              }}
+              className="group flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-white/62 transition-colors hover:bg-red-500/10 hover:text-red-200"
+            >
+              <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">Terminate</span>
+            </button>
+          </div>
         </div>
-      </nav>
-      <div className="p-4 border-t border-gray-100">
-        <button
-          onClick={() => {
-            logout();
-            router.push("/login");
-          }}
-          className="flex items-center gap-3 px-3 sm:px-4 py-3 w-full text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors group"
-        >
-          <LogOut
-            size={20}
-            className="group-hover:translate-x-1 transition-transform"
-          />
-          <span className="font-medium text-sm sm:text-base">Logout</span>
-        </button>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

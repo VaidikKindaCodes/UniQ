@@ -170,3 +170,67 @@ export const sendAdminInvite = async (req: AuthRequest, res: Response) => {
     });
   }
 };
+
+/**
+ * List all queues for management
+ */
+export const listQueues = async (req: AuthRequest, res: Response) => {
+  try {
+    const queues = await adminService.getAllQueues();
+    return res.status(200).json(queues);
+  } catch (error: any) {
+    console.error("Error listing queues:", error);
+    return res.status(500).json({ 
+      message: "An error occurred while fetching queues",
+      error: error.message 
+    });
+  }
+};
+
+/**
+ * Remove a queue
+ */
+export const removeQueue = async (req: AuthRequest, res: Response) => {
+  try {
+    const { queueId } = req.params;
+    const result = await adminService.deleteQueue(queueId);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error removing queue:", error);
+    return res.status(500).json({ message: "Failed to remove queue" });
+  }
+};
+
+/**
+ * List all operators
+ */
+export const listOperators = async (req: AuthRequest, res: Response) => {
+  try {
+    const operators = await adminService.getAllOperators();
+    return res.status(200).json(operators);
+  } catch (error: any) {
+    console.error("Error listing operators:", error);
+    return res.status(500).json({ 
+      message: "An error occurred while fetching operators",
+      error: error.message 
+    });
+  }
+};
+
+/**
+ * Reset operator password
+ */
+export const resetOpPassword = async (req: AuthRequest, res: Response) => {
+  try {
+    const { operatorId } = req.params;
+    const { newPassword } = req.body;
+    if (!newPassword) {
+      return res.status(400).json({ message: "New password is required" });
+    }
+    const result = await adminService.resetOperatorPassword(operatorId, newPassword);
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("Error resetting password:", error);
+    return res.status(500).json({ message: "Failed to reset password" });
+  }
+};

@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/context/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   LayoutDashboard,
   ListOrdered,
@@ -12,7 +12,6 @@ import {
   BarChart3,
   Settings,
   ShieldUser,
-  User,
   LogOut,
   Menu,
   X,
@@ -55,126 +54,90 @@ export default function AdminSidebar() {
     return pathname.startsWith(href);
   };
 
-  const linkStyle = (href: string) => {
-    const active = isActive(href);
-    return `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105 group ${
-      active
-        ? "bg-sky-600 text-white shadow-md"
-        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-    }`;
-  };
-
   return (
     <>
-      {/* Mobile Menu Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-60 p-2 bg-white rounded-lg shadow-lg border border-slate-200 hover:bg-slate-50 transition-colors"
+        className="theme-card-elevated fixed top-4 left-4 z-50 rounded-xl p-2.5 lg:hidden"
         aria-label="Toggle menu"
       >
         {isOpen ? <X size={24} /> : <Menu size={24} />}
       </button>
 
-      {/* Mobile Overlay */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
+          className="fixed inset-0 z-30 bg-[rgba(8,34,48,0.42)] backdrop-blur-sm lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
       <aside
-        className={`
-          fixed left-0 top-0 z-50 h-screen bg-white border-r border-slate-200 
-          flex flex-col transition-transform duration-300 ease-in-out
-          w-72 lg:w-64 xl:w-72
-          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
-        `}
+        className={`sidebar-shell fixed inset-y-0 left-0 z-40 w-72 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       >
-        {/* Header */}
-        <div className="p-6 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sky-600 flex items-center justify-center shadow-md">
-              <LayoutDashboard size={20} className="text-white" />
+        <div className="flex h-full flex-col">
+          <div className="p-8 border-b border-white/5">
+            <div className="flex items-center justify-between mb-8">
+              <Link href="/" className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-sm border border-white/18 bg-white/10 text-xs font-black text-white">
+                  U
+                </div>
+                <div>
+                  <span className="block text-lg font-semibold uppercase tracking-[0.24em] text-white">UNIQ</span>
+                  <span className="block text-[9px] uppercase tracking-[0.34em] text-[#ffe2b5]/80">Admin Console</span>
+                </div>
+              </Link>
+              <ThemeToggle />
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-                Admin Portal
-              </h1>
-              <p className="text-xs text-slate-500">System Management</p>
-            </div>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-[#ffd88d]">
+              Admin Workspace
+            </p>
           </div>
-        </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-transparent hover:[&::-webkit-scrollbar-thumb]:bg-[#94A3B8]/50 [&::-webkit-scrollbar-track]:bg-transparent">
-          <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4">
-            Navigation
-          </p>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setIsOpen(false)}
-              className={linkStyle(item.href)}
+          <nav className="flex-1 px-4 py-8 space-y-1">
+            <p className="mb-4 px-4 text-[8px] font-black uppercase tracking-[0.4em] text-white/42">Main Modules</p>
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className={`group flex items-center gap-4 rounded-2xl border px-4 py-3 transition-all duration-300 ${
+                    active
+                      ? "border-[#ffd88d]/20 bg-white/10 text-white shadow-[inset_0_0_10px_rgba(255,216,141,0.08)]"
+                      : "border-transparent text-white/62 hover:bg-white/8 hover:text-white"
+                  }`}
+                >
+                  <span className={`${active ? "text-[#ffd88d]" : "text-white/44 group-hover:text-[#ffd88d]"}`}>
+                    {item.icon}
+                  </span>
+                  <span className="text-[11px] font-black uppercase tracking-widest transition-colors">
+                    {item.label}
+                  </span>
+                  {active && <div className="ml-auto h-1.5 w-1.5 rounded-full bg-[#ffd88d]" />}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="p-6 border-t border-white/5 bg-black/20">
+            <button
+              onClick={() => {
+                logout();
+                setIsOpen(false);
+                router.push("/login");
+              }}
+              className="group flex w-full items-center gap-4 rounded-2xl px-4 py-3 text-white/62 transition-colors hover:bg-red-500/10 hover:text-red-200"
             >
-              <span
-                className={
-                  isActive(item.href)
-                    ? "text-white"
-                    : "text-slate-600 group-hover:text-slate-900"
-                }
-              >
-                {item.icon}
-              </span>
-              <span className="font-medium text-sm flex-1">{item.label}</span>
-              {isActive(item.href) && (
-                <ChevronRight size={16} className="text-white" />
-              )}
-            </Link>
-          ))}
-        </nav>
-
-        {/* Profile Section */}
-        <div className="p-4 border-t border-slate-100">
-          <p className="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">
-            Account
-          </p>
-
-          <Link
-            href="/admin/profile"
-            onClick={() => setIsOpen(false)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-105 mb-2 ${
-              pathname === "/admin/profile"
-                ? "bg-slate-100 text-slate-900"
-                : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            }`}
-          >
-            <div className="w-8 h-8 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center">
-              <User size={16} className="text-slate-600" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-medium">Admin User</p>
-              <p className="text-xs text-slate-500">View Profile</p>
-            </div>
-          </Link>
-
-          <button
-            onClick={() => {
-              logout();
-              router.push("/login");
-            }}
-            className="flex items-center gap-3 px-4 py-3 w-full text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-300 hover:scale-105 group"
-          >
-            <LogOut
-              size={20}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-            <span className="font-medium text-sm">Logout</span>
-          </button>
+              <LogOut size={18} className="group-hover:translate-x-1 transition-transform" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em]">Terminate Session</span>
+            </button>
+          </div>
         </div>
       </aside>
     </>
   );
 }
+

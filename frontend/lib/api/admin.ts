@@ -181,3 +181,70 @@ export const createAdmin = async (
   return response.json();
 };
 
+/**
+ * Fetch all queues for management
+ */
+export const fetchAllQueues = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/queues`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch queues");
+  }
+
+  return response.json();
+};
+
+/**
+ * Delete a queue
+ */
+export const deleteQueue = async (queueId: string) => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/queues/${queueId}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete queue");
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch all operators for management
+ */
+export const fetchAllOperators = async () => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/operators`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch operators");
+  }
+
+  return response.json();
+};
+
+/**
+ * Reset operator password
+ */
+export const resetOperatorPassword = async (operatorId: string, newPassword: string) => {
+  const response = await fetch(`${API_BASE_URL}/api/admin/operators/${operatorId}/reset-password`, {
+    method: "POST",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ newPassword }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.message || "Failed to reset password");
+  }
+
+  return response.json();
+};
+
+

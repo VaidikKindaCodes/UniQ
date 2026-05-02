@@ -1,5 +1,16 @@
+"use client";
+
 import { Queue } from "./queue.types";
 import { useRouter } from "next/navigation";
+import { 
+  MapPin, 
+  Users, 
+  Clock, 
+  Terminal, 
+  ArrowUpRight, 
+  Lock, 
+  Cpu
+} from "lucide-react";
 
 interface QueueCardProps {
   queue: Queue;
@@ -8,123 +19,101 @@ interface QueueCardProps {
 export default function QueueCard({ queue }: QueueCardProps) {
   const router = useRouter();
 
-  const getAccentColor = (status: string) => {
+  const getStatusConfig = (status: string) => {
     switch (status) {
       case "open":
-        return "bg-[#16A34A]"; // Success (Open)
+        return { label: "ACTIVE", color: "text-[#ffd88d]", border: "border-[#ffd88d]/30", pulse: "bg-[#ffd88d]" };
       case "paused":
-        return "bg-[#D97706]"; // Warning (Paused)
+        return { label: "STANDBY", color: "text-amber-200", border: "border-amber-500/30", pulse: "bg-amber-400" };
       case "full":
-        return "bg-[#DC2626]"; // Danger (Full / Closed)
+        return { label: "CAPACITY", color: "text-red-300", border: "border-red-500/30", pulse: "bg-red-400" };
       default:
-        return "bg-[#16A34A]";
+        return { label: "OFFLINE", color: "text-[#ffe2b5]/54", border: "border-white/10", pulse: "bg-white/30" };
     }
   };
 
-  const getStatusInfo = (status: string) => {
-    switch (status) {
-      case "open":
-        return { label: "Live", color: "#16A34A" };
-      case "paused":
-        return { label: "Paused", color: "#D97706" };
-      case "full":
-        return { label: "Full", color: "#DC2626" };
-      case "serving":
-        return { label: "Serving", color: "#2563EB" };
-      default:
-        return { label: "Open", color: "#16A34A" };
-    }
-  };
-
-  const statusInfo = getStatusInfo(queue.status);
+  const status = getStatusConfig(queue.status);
   const isLive = queue.status === "open";
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative">
-      {/* Left accent line */}
-      <div
-        className={`absolute left-0 top-0 bottom-0 w-1 ${getAccentColor(queue.status)}`}
-      />
+    <div className="dashboard-panel-dark group relative rounded-[2rem] transition-all duration-500 hover:-translate-y-1">
+      <div className={`absolute left-0 top-0 h-px w-full opacity-20 transition-all duration-700 group-hover:opacity-100 ${status.pulse}`} />
 
-      <div className="p-5 pl-6">
-        {/* Header with Status indicator */}
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-xl font-bold text-[#1E293B] leading-tight">
-            {queue.queueName}
-          </h3>
-          {isLive ? (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-50">
-              <div className="w-2 h-2 rounded-full bg-[#16A34A]"></div>
-              <span className="text-xs font-medium text-[#16A34A]">Live</span>
+      <div className="p-6 sm:p-8">
+        <div className="flex justify-between items-start mb-8">
+          <div className="space-y-1.5">
+            <h3 className="text-xl font-bold uppercase tracking-tighter text-white leading-none transition-colors group-hover:text-[#ffd88d]">
+              {queue.queueName}
+            </h3>
+            <div className="flex items-center gap-2 text-[9px] font-mono font-bold uppercase tracking-[0.2em] text-[#ffe2b5]/58">
+              <MapPin size={10} className="text-[#ffd88d]" />
+              {queue.location} {queue.counterNumber > 0 && `// SEC-${queue.counterNumber}`}
             </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <div
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: statusInfo.color }}
-              ></div>
-              <span
-                className="text-xs font-medium"
-                style={{ color: statusInfo.color }}
-              >
-                {statusInfo.label}
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Location and Counter */}
-        <p className="text-sm text-[#64748B] mb-4 font-normal">
-          {queue.location}
-          {queue.counterNumber > 0 && ` • Counter ${queue.counterNumber}`}
-        </p>
-
-        {/* Queue Length and Estimated Wait Time Box */}
-        <div className="border-dashed border border-gray-200 rounded-lg p-4 mb-4 bg-[#F8FAFC]">
-          <div className="flex justify-between items-baseline">
-            <span className="text-xs text-[#94A3B8] uppercase tracking-wider font-normal">
-              Queue Length
+          </div>
+          
+          <div className={`flex items-center gap-2 rounded-full border ${status.border} bg-black/20 px-3 py-1.5`}>
+            <div className={`h-1.5 w-1.5 rounded-full ${status.pulse} ${isLive ? 'animate-pulse' : ''}`} />
+            <span className={`text-[9px] font-black uppercase tracking-[0.2em] ${status.color}`}>
+              {status.label}
             </span>
-            <span className="font-normal text-gray-700">
+          </div>
+        </div>
+        <div className="mb-8 grid grid-cols-2 gap-px rounded-[1.4rem] border border-white/8 bg-white/8">
+          <div className="rounded-l-[1.4rem] bg-[#2a1306] p-5 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <Users size={12} className="text-[#ffe2b5]/46" />
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#ffe2b5]/46">Density</span>
+            </div>
+            <p className="text-2xl font-black text-white font-mono leading-none tracking-tighter">
               {queue.queueLength}
-              {queue.capacity ? ` / ${queue.capacity}` : ""} people
-            </span>
+              <span className="ml-1 text-[10px] text-[#ffe2b5]/36">
+                {queue.capacity ? `/${queue.capacity}` : "OBJ"}
+              </span>
+            </p>
           </div>
-          <div className="flex justify-between items-baseline">
-            <span className="text-xs text-[#94A3B8] uppercase tracking-wider font-normal">
-              Estimated Wait
-            </span>
-            <span className="text-2xl font-bold text-[#2563EB]">
-              {queue.waitTime === null || queue.waitTime === undefined
-                ? "—"
-                : `~ ${queue.waitTime} mins`}
-            </span>
+
+          <div className="rounded-r-[1.4rem] bg-[#2a1306] p-5 transition-colors">
+            <div className="flex items-center gap-2 mb-2">
+              <Clock size={12} className="text-[#ffe2b5]/46" />
+              <span className="text-[8px] font-black uppercase tracking-widest text-[#ffe2b5]/46">Latency</span>
+            </div>
+            <p className="text-2xl font-black text-[#ffd88d] font-mono leading-none tracking-tighter">
+              {queue.waitTime ?? "00"}
+              <span className="ml-1 text-[10px] uppercase text-[#ffe2b5]/36">min</span>
+            </p>
           </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* View Kiosk Button */}
+        <div className="grid grid-cols-2 gap-4">
           <button
-            className="bg-slate-700 text-white py-3 rounded-md font-bold text-base hover:bg-slate-600 transition-colors"
-            onClick={() => {
-              router.push(`/kiosk/${queue.queueId}`);
-            }}
+            onClick={() => router.push(`/kiosk/${queue.queueId}`)}
+            className="group/btn flex items-center justify-center gap-3 rounded-full border border-white/8 bg-white/8 py-3.5 text-[10px] font-black uppercase tracking-[0.3em] text-white transition-all hover:bg-white hover:text-[#4b1d08]"
           >
-            View
+            Monitor <Terminal size={12} className="opacity-50 group-hover/btn:opacity-100" />
           </button>
 
-          {/* Join Queue Button */}
           <button
-            className="bg-[#2563EB] text-white py-3 rounded-md font-bold text-base hover:bg-[#1d4ed8] transition-colors"
-            onClick={() => {
-              // Placeholder for join queue action
-              console.log("Join queue:", queue.queueId);
-            }}
+            disabled={!isLive}
+            onClick={() => console.log("Join queue:", queue.queueId)}
+            className={`flex items-center justify-center gap-2 py-3.5 text-[10px] font-black uppercase tracking-[0.3em] transition-all ${
+              isLive
+                ? "rounded-full bg-[#ffd88d] text-[#4b1d08] hover:bg-[#f1bf63]"
+                : "cursor-not-allowed rounded-full border border-white/8 bg-white/6 text-[#ffe2b5]/40"
+            }`}
           >
-            Join Queue
+            {isLive ? (
+              <>Initialize <ArrowUpRight size={14} /></>
+            ) : (
+              <>Locked <Lock size={12} /></>
+            )}
           </button>
         </div>
+      </div>
+      <div className="flex items-center justify-between px-8 pb-4 opacity-20 transition-opacity group-hover:opacity-40">
+        <div className="flex gap-4">
+          <span className="text-[7px] font-mono text-white tracking-tighter uppercase">Node_{queue.queueId.slice(0, 4)}</span>
+          <span className="text-[7px] font-mono text-white tracking-tighter uppercase font-black">STABLE</span>
+        </div>
+        <Cpu size={10} className="text-white" />
       </div>
     </div>
   );

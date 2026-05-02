@@ -1,10 +1,420 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+:root {
+  color-scheme: light;
+  --bg-surface: #140e0b;
+  --bg-surface-soft: #211915;
+  --bg-surface-elevated: rgba(37, 29, 24, 0.84);
+  --bg-surface-muted: #2b211b;
+  --text-primary: #f5efe6;
+  --text-secondary: #b1a49a;
+  --text-tertiary: #8e8178;
+  --border-default: rgba(196, 166, 122, 0.14);
+  --border-strong: rgba(196, 166, 122, 0.24);
+  --brand-start: #140e0b;
+  --brand-mid: #1c1511;
+  --brand-end: #2a2019;
+  --accent-primary: #c4a67a;
+  --accent-primary-strong: #d3b488;
+  --accent-foreground: #140e0b;
+  --focus-ring: rgba(196, 166, 122, 0.14);
+  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.28);
+  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.24);
+  --surface-highlight: #c4a67a;
+  --surface-cocoa: #1a120f;
+  --surface-rust: #6c5642;
+}
 
+.dark {
+  color-scheme: dark;
+  --bg-surface: #110c09;
+  --bg-surface-soft: #1b1411;
+  --bg-surface-elevated: rgba(28, 21, 17, 0.9);
+  --bg-surface-muted: #241c17;
+  --text-primary: #f5efe6;
+  --text-secondary: #a6978b;
+  --text-tertiary: #7f7269;
+  --border-default: rgba(196, 166, 122, 0.12);
+  --border-strong: rgba(196, 166, 122, 0.22);
+  --brand-start: #110c09;
+  --brand-mid: #1a120f;
+  --brand-end: #221915;
+  --accent-primary: #c4a67a;
+  --accent-primary-strong: #d3b488;
+  --accent-foreground: #140e0b;
+  --focus-ring: rgba(196, 166, 122, 0.16);
+  --shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.42);
+  --shadow-card: 0 20px 50px rgba(0, 0, 0, 0.34);
+  --surface-highlight: #c4a67a;
+  --surface-cocoa: #16100d;
+  --surface-rust: #6c5642;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen antialiased;
+  background-image: radial-gradient(circle at top center, rgba(196, 166, 122, 0.12), transparent 22%),
+    radial-gradient(circle at bottom right, rgba(108, 86, 66, 0.1), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 32%);
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.dark body {
+  background-image: radial-gradient(circle at top center, rgba(196, 166, 122, 0.08), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(108, 86, 66, 0.14), transparent 30%),
+    linear-gradient(180deg, rgba(17, 12, 9, 0.98), rgba(17, 12, 9, 1));
+}
+
+* {
+  @apply transition-colors duration-200 ease-out;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+  @apply outline-none focus:outline-none;
+}
+
+input,
+select,
+textarea {
+  @apply rounded-3xl border shadow-sm;
+  border-color: var(--border-default);
+  background-color: var(--bg-surface-soft);
+  color: var(--text-primary);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+::selection {
+  background-color: rgba(196, 166, 122, 0.24);
+  color: var(--surface-cocoa);
+}
 
 .btn {
-  @apply px-4 py-2 rounded-lg text-sm font-medium border 
-         bg-white hover:bg-gray-100 transition 
-         cursor-pointer shadow-sm;
+  @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-200 hover:-translate-y-0.5;
+  background-color: var(--accent-primary);
+  color: var(--accent-foreground);
+  box-shadow: 0 20px 40px color-mix(in srgb, var(--accent-primary) 28%, transparent);
+}
+
+.btn:hover {
+  background-color: var(--accent-primary-strong);
+}
+
+.theme-page {
+  background-color: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.theme-card {
+  border: 1px solid var(--border-default);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-surface-soft) 98%, white 2%), color-mix(in srgb, var(--bg-surface-muted) 95%, transparent 5%));
+  box-shadow: var(--shadow-card);
+}
+
+.theme-card-elevated {
+  border: 1px solid var(--border-default);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-surface-elevated) 99%, white 1%), color-mix(in srgb, var(--bg-surface-muted) 90%, transparent 10%));
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(18px);
+}
+
+.theme-card-elevated:hover {
+  background-color: var(--bg-surface-muted);
+}
+
+.theme-card-muted {
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface-muted);
+}
+
+.theme-title {
+  color: var(--text-primary);
+}
+
+.theme-text-muted {
+  color: var(--text-secondary);
+}
+
+.theme-text-soft {
+  color: var(--text-tertiary);
+}
+
+.theme-input {
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface-soft);
+  color: var(--text-primary);
+}
+
+.theme-input-muted {
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface-muted);
+  color: var(--text-primary);
+}
+
+.theme-icon-chip {
+  background-color: var(--bg-surface-muted);
+  color: var(--text-primary);
+}
+
+.theme-outline-button {
+  border: 1px solid var(--border-default);
+  background-color: var(--bg-surface-soft);
+  color: var(--text-primary);
+}
+
+.theme-outline-button:hover {
+  border-color: var(--border-strong);
+  background-color: var(--bg-surface-muted);
+}
+
+.theme-primary-button {
+  background-color: var(--accent-primary);
+  color: var(--accent-foreground);
+  box-shadow: 0 16px 32px color-mix(in srgb, var(--accent-primary) 28%, transparent);
+}
+
+.theme-primary-button:hover {
+  background-color: var(--accent-primary-strong);
+}
+
+.auth-page [class*="bg-white"],
+.marketing-page [class*="bg-white"],
+[class*="bg-white rounded"],
+[class*="rounded-2xl bg-white"],
+[class*="rounded-xl bg-white"] {
+  background-color: var(--bg-surface-soft) !important;
+}
+
+.auth-page [class*="bg-slate-50"],
+.marketing-page [class*="bg-slate-50"],
+[class*="bg-slate-50"],
+[class*="bg-slate-100"] {
+  background-color: var(--bg-surface-muted) !important;
+}
+
+.auth-page [class*="border-slate-200"],
+.auth-page [class*="border-slate-100"],
+.marketing-page [class*="border-slate-200"],
+.marketing-page [class*="border-slate-100"],
+[class*="border-slate-200"],
+[class*="border-slate-100"],
+[class*="border-slate-300"] {
+  border-color: var(--border-default) !important;
+}
+
+.auth-page [class*="text-slate-900"],
+.auth-page [class*="text-slate-800"],
+.auth-page [class*="text-slate-700"],
+.marketing-page [class*="text-slate-900"],
+.marketing-page [class*="text-slate-800"],
+.marketing-page [class*="text-slate-700"],
+[class*="text-slate-900"],
+[class*="text-slate-800"],
+[class*="text-slate-700"] {
+  color: var(--text-primary) !important;
+}
+
+.auth-page [class*="text-slate-600"],
+.auth-page [class*="text-slate-500"],
+.auth-page [class*="text-slate-400"],
+.marketing-page [class*="text-slate-600"],
+.marketing-page [class*="text-slate-500"],
+.marketing-page [class*="text-slate-400"],
+[class*="text-slate-600"],
+[class*="text-slate-500"],
+[class*="text-slate-400"] {
+  color: var(--text-secondary) !important;
+}
+
+.dark .auth-page [class*="bg-slate-900"],
+.dark .marketing-page [class*="bg-slate-900"],
+.dark [class*="bg-slate-900"] {
+  background-color: var(--surface-cocoa) !important;
+}
+
+.dark .auth-page [class*="hover:bg-slate-800"]:hover,
+.dark .marketing-page [class*="hover:bg-slate-800"]:hover,
+.dark [class*="hover:bg-slate-800"]:hover {
+  background-color: var(--surface-rust) !important;
+}
+
+[class*="bg-sky-600"],
+[class*="bg-blue-600"] {
+  background-color: var(--accent-primary) !important;
+  color: var(--accent-foreground) !important;
+}
+
+[class*="hover:bg-sky-700"]:hover,
+[class*="hover:bg-blue-700"]:hover,
+[class*="hover:bg-cyan-400"]:hover {
+  background-color: var(--accent-primary-strong) !important;
+}
+
+[class*="text-sky-700"],
+[class*="text-sky-600"],
+[class*="text-blue-700"],
+[class*="text-blue-600"] {
+  color: var(--surface-rust) !important;
+}
+
+[class*="border-sky-600"],
+[class*="border-sky-500"],
+[class*="border-blue-600"] {
+  border-color: color-mix(in srgb, var(--surface-rust) 58%, transparent) !important;
+}
+
+[class*="bg-sky-100"],
+[class*="bg-blue-100"] {
+  background-color: color-mix(in srgb, var(--surface-highlight) 36%, white 64%) !important;
+}
+
+[class*="hover:bg-sky-50"]:hover,
+[class*="hover:bg-slate-50"]:hover,
+[class*="hover:bg-slate-100"]:hover {
+  background-color: color-mix(in srgb, var(--bg-surface-muted) 88%, white 12%) !important;
+}
+
+.marketing-panel {
+  border: 1px solid var(--border-default);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-surface-soft) 98%, white 2%), color-mix(in srgb, var(--bg-surface-muted) 94%, transparent 6%)),
+    radial-gradient(circle at top right, rgba(196, 166, 122, 0.08), transparent 30%);
+  box-shadow: var(--shadow-card);
+}
+
+.dark .marketing-panel {
+  background:
+    linear-gradient(180deg, rgba(27, 20, 17, 0.98), rgba(20, 15, 12, 0.98)),
+    radial-gradient(circle at top right, rgba(196, 166, 122, 0.06), transparent 30%);
+}
+
+.marketing-panel:hover {
+  border-color: color-mix(in srgb, var(--accent-primary) 36%, var(--border-default));
+}
+
+.marketing-cta {
+  border: 1px solid var(--border-default);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--bg-surface-soft) 98%, white 2%), color-mix(in srgb, var(--bg-surface-muted) 95%, transparent 5%)),
+    radial-gradient(circle at top right, rgba(196, 166, 122, 0.12), transparent 28%);
+  box-shadow: var(--shadow-card);
+}
+
+.dark .marketing-cta {
+  background:
+    linear-gradient(135deg, rgba(29, 22, 18, 0.98), rgba(20, 15, 12, 0.98)),
+    radial-gradient(circle at top right, rgba(196, 166, 122, 0.1), transparent 28%);
+}
+
+.sidebar-shell {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--brand-start) 96%, black 4%), color-mix(in srgb, var(--brand-mid) 94%, black 6%) 52%, color-mix(in srgb, var(--brand-end) 92%, black 8%));
+  color: #f5efe6;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+}
+
+.dark .sidebar-shell {
+  background:
+    linear-gradient(180deg, rgba(17, 12, 9, 0.98), rgba(24, 18, 14, 0.96) 46%, rgba(31, 24, 19, 0.94));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.46);
+}
+
+.sidebar-nav-link {
+  color: rgba(241, 245, 249, 0.82);
+}
+
+.sidebar-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+
+.sidebar-nav-link-active {
+  background-color: rgba(45, 34, 28, 0.96);
+  color: var(--surface-highlight);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+}
+
+.dark .sidebar-nav-link-active {
+  background-color: rgba(36, 28, 23, 0.96);
+  color: var(--surface-highlight);
+}
+
+.brand-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.brand-wordmark-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 1.1rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.brand-wordmark-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at top center, rgba(196, 166, 122, 0.06), transparent 24%),
+    linear-gradient(180deg, #120d0a 0%, #140e0b 40%, #110c09 100%);
+}
+
+.dark .app-shell {
+  background:
+    radial-gradient(circle at top center, rgba(196, 166, 122, 0.05), transparent 24%),
+    linear-gradient(180deg, #120d0a 0%, #140e0b 38%, #110c09 100%);
+}
+
+.app-content-shell {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0.005)),
+    linear-gradient(180deg, rgba(10, 8, 6, 0.18), rgba(10, 8, 6, 0.12));
+}
+
+.dashboard-panel {
+  border: 1px solid var(--border-default);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--bg-surface-soft) 99%, white 1%), color-mix(in srgb, var(--bg-surface-muted) 96%, transparent 4%));
+  box-shadow: var(--shadow-card);
+}
+
+.dashboard-panel-dark {
+  border: 1px solid var(--border-default);
+  background:
+    linear-gradient(180deg, rgba(31, 24, 19, 0.9), rgba(22, 17, 13, 0.98));
+  box-shadow: var(--shadow-card);
 }

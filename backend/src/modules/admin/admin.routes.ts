@@ -9,6 +9,10 @@ import {
   getAvgWaitTimeAnalytics,
   getTokenStatusAnalytics,
   sendAdminInvite,
+  listQueues,
+  removeQueue,
+  listOperators,
+  resetOpPassword,
 } from "./admin.controller.js";
 
 const router = Router();
@@ -58,5 +62,11 @@ router.get(
   authorize("admin"),
   getTokenStatusAnalytics
 );
+
+// Management Endpoints
+router.get("/queues", verifyJWT, authorize("admin"), listQueues);
+router.delete("/queues/:queueId", verifyJWT, authorize("admin"), removeQueue);
+router.get("/operators", verifyJWT, authorize("admin"), listOperators);
+router.post("/operators/:operatorId/reset-password", verifyJWT, authorize("admin"), resetOpPassword);
 
 export default router;

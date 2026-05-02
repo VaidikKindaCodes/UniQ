@@ -9,10 +9,10 @@ export default function OperatorLayout({
 }){
     return(
         <ProtectedRoute roles={["operator","admin"]}>
-            <div className="flex min-h-screen bg-gray-50">
+            <div className="app-shell flex min-h-screen">
                 <OperatorSidebar/>
-                <main className="flex-1 ml-48 sm:ml-64 min-h-screen">
-                    <div className=" p-4 sm:p-8 max-w-7xl mx-auto">
+                <main className="app-content-shell flex-1 lg:ml-72 min-h-screen">
+                    <div className="p-4 sm:p-8 max-w-7xl mx-auto">
                       {children}
                     </div>
                 </main>
