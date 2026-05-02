@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "start": "tsx src/server.ts",
     "build": "tsc",
-    "start": "npx tsx src/server.ts",
     "bootstrapAdmin": "tsx src/scripts/bootstrapAdmin.ts"
   },
   "dependencies": {
