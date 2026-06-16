@@ -83,39 +83,53 @@ export default function QueueLoadChart() {
       <ResponsiveContainer width="100%" height={260}>
         <LineChart
           data={data}
-          margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
         >
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
 
           <XAxis
             dataKey="time"
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10, fill: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}
             tickLine={false}
+            axisLine={{ stroke: "rgba(255, 255, 255, 0.05)" }}
           />
 
           <YAxis
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 10, fill: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}
             tickLine={false}
-            axisLine={false}
+            axisLine={{ stroke: "rgba(255, 255, 255, 0.05)" }}
           />
 
           <Tooltip
             contentStyle={{
-              borderRadius: "8px",
-              border: "1px solid #e5e7eb",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+              backgroundColor: "#140c08",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "16px",
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
             }}
-            labelStyle={{ fontWeight: 600 }}
+            labelStyle={{
+              fontWeight: 800,
+              color: "#ffd88d",
+              fontSize: "11px",
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              fontFamily: "monospace",
+            }}
+            itemStyle={{
+              color: "#ffffff",
+              fontSize: "12px",
+              fontFamily: "monospace",
+            }}
             formatter={(value: number | undefined) => [`${value ?? 0}`, "Active Tokens"]}
           />
 
           <Line
             type="monotone"
             dataKey="activeTokens"
-            stroke="#3b82f6"
+            stroke="#ffd88d"
             strokeWidth={3}
-            dot={{ r: 4, strokeWidth: 2, fill: "#ffffff" }}
-            activeDot={{ r: 7 }}
+            dot={{ r: 3, strokeWidth: 2, fill: "#1a0f0a", stroke: "#ffd88d" }}
+            activeDot={{ r: 6, fill: "#ffd88d", stroke: "#1a0f0a", strokeWidth: 2 }}
             animationDuration={900}
           />
         </LineChart>

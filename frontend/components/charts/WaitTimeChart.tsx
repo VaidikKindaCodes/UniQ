@@ -8,6 +8,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 import { fetchAvgWaitTimeAnalytics, AvgWaitTime } from "@/lib/api/admin";
 import ChartWrapper from "./ChartWrapper";
@@ -83,19 +84,51 @@ export default function WaitTimeChart() {
         <BarChart
           data={data}
           layout="vertical"
-          margin={{ left: 40 }}
+          margin={{ top: 10, right: 10, left: -10, bottom: 0 }}
         >
-          <XAxis type="number" />
-          <YAxis dataKey="queue" type="category" width={110} />
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" horizontal={false} />
+          <XAxis
+            type="number"
+            tick={{ fontSize: 10, fill: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}
+            tickLine={false}
+            axisLine={{ stroke: "rgba(255, 255, 255, 0.05)" }}
+          />
+          <YAxis
+            dataKey="queue"
+            type="category"
+            width={110}
+            tick={{ fontSize: 10, fill: "rgba(255, 255, 255, 0.6)", fontWeight: 700 }}
+            tickLine={false}
+            axisLine={{ stroke: "rgba(255, 255, 255, 0.05)" }}
+          />
           <Tooltip
+            contentStyle={{
+              backgroundColor: "#140c08",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "16px",
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
+            }}
+            labelStyle={{
+              fontWeight: 800,
+              color: "#ffd88d",
+              fontSize: "11px",
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              fontFamily: "monospace",
+            }}
+            itemStyle={{
+              color: "#ffffff",
+              fontSize: "12px",
+              fontFamily: "monospace",
+            }}
             formatter={(value) =>
-              value !== undefined ? `${value} min` : ""
+              value !== undefined ? [`${value} min`, "Avg Wait Time"] : ["", ""]
             }
           />
           <Bar
             dataKey="avgWaitMinutes"
-            fill="#16a34a"
-            radius={[0, 6, 6, 0]}
+            fill="#ffd88d"
+            radius={[0, 4, 4, 0]}
             animationDuration={700}
           />
         </BarChart>

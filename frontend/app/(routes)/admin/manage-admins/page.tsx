@@ -14,7 +14,7 @@ type AdminUser = {
   createdAt: string;
 };
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
 export default function ManageAdminsPage() {
   const [admins, setAdmins] = useState<AdminUser[]>([]);

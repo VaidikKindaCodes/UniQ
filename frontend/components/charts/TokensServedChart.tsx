@@ -8,6 +8,7 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  CartesianGrid,
 } from "recharts";
 import { fetchTokensServedAnalytics, TokensServed } from "@/lib/api/admin";
 import ChartWrapper from "./ChartWrapper";
@@ -80,14 +81,47 @@ export default function TokensServedChart() {
       description="Shows how many tokens were successfully served during each hourly interval."
     >
       <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={data}>
-          <XAxis dataKey="hour" />
-          <YAxis />
-          <Tooltip />
+        <BarChart
+          data={data}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.05)" />
+          <XAxis
+            dataKey="hour"
+            tick={{ fontSize: 10, fill: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}
+            tickLine={false}
+            axisLine={{ stroke: "rgba(255, 255, 255, 0.05)" }}
+          />
+          <YAxis
+            tick={{ fontSize: 10, fill: "rgba(255, 255, 255, 0.4)", fontFamily: "monospace" }}
+            tickLine={false}
+            axisLine={{ stroke: "rgba(255, 255, 255, 0.05)" }}
+          />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#140c08",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "16px",
+              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.5)",
+            }}
+            labelStyle={{
+              fontWeight: 800,
+              color: "#ffd88d",
+              fontSize: "11px",
+              textTransform: "uppercase",
+              letterSpacing: "0.15em",
+              fontFamily: "monospace",
+            }}
+            itemStyle={{
+              color: "#ffffff",
+              fontSize: "12px",
+              fontFamily: "monospace",
+            }}
+          />
           <Bar
             dataKey="served"
-            fill="#6366f1"
-            radius={[6, 6, 0, 0]}
+            fill="#ffe2b5"
+            radius={[4, 4, 0, 0]}
             animationDuration={700}
           />
         </BarChart>

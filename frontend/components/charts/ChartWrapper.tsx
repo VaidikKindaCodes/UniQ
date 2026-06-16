@@ -12,16 +12,18 @@ export default function ChartWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 transition hover:shadow-md">
-      <h3 className="text-lg font-semibold text-gray-800 mb-2">
-        {title}
-      </h3>
-
-      {children}
+    <div className="w-full bg-transparent">
+      {/* 
+        We hide the duplicate title since the parent container already renders 
+        a themed, styled title, allowing us to utilize space more efficiently.
+      */}
+      <div className="w-full">
+        {children}
+      </div>
 
       {description && (
-        <p className="text-sm text-gray-600 mt-3">
-          {description}
+        <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-white/30 mt-4 leading-relaxed">
+          // {description}
         </p>
       )}
     </div>
