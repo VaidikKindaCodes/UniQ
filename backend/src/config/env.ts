@@ -25,6 +25,12 @@ interface EnvConfig {
   QUEUE_JOIN_RATE_LIMIT_PER_MIN: number;
   QUEUE_JOIN_RATE_LIMIT_PER_HOUR: number;
   TOKEN_EXPIRY_MINUTES: number;
+
+  // ML service
+  ML_SERVICE_URL: string;
+
+  // Root admin override
+  ROOT_ADMIN_EMAIL: string;
 }
 
 const getEnvConfig = (): EnvConfig => {
@@ -93,6 +99,12 @@ const getEnvConfig = (): EnvConfig => {
     TOKEN_EXPIRY_MINUTES: process.env.TOKEN_EXPIRY_MINUTES
       ? parseInt(process.env.TOKEN_EXPIRY_MINUTES, 10)
       : 5,
+
+    // ML service URL
+    ML_SERVICE_URL: process.env.ML_SERVICE_URL || "http://localhost:8001",
+
+    // Root admin email for bootstrap override
+    ROOT_ADMIN_EMAIL: process.env.ROOT_ADMIN_EMAIL || "",
   };
 };
 

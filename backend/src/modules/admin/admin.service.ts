@@ -5,7 +5,7 @@ import { User } from "../auth/user.model.js";
 import crypto from "crypto";
 import { sendAdminInviteEmail } from "../notifications/email.service.js";
 import { AuthError } from "../auth/auth.service.js";
-
+import { env } from "../../config/env.js";
 /**
  * Admin Analytics Service
  * Provides data aggregation logic for admin dashboard analytics
@@ -345,7 +345,7 @@ export const createInvite = async (
   });
 
   // Send Email
-  const inviteLink = `${process.env.FRONTEND_URL}/admin/accept-invite?token=${token}&email=${email}`; 
+  const inviteLink = `${env.FRONTEND_URL}/admin/accept-invite?token=${token}&email=${email}`; 
 
   await sendAdminInviteEmail(email, inviteLink, inviterName);
 

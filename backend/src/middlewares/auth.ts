@@ -6,7 +6,7 @@ import { UserRole } from "../modules/auth/user.model.js";
 export interface JwtUserPayload extends JwtPayload {
   sub: string;
   role: UserRole;
-  email: string; // ✅ Added
+  email: string;
 }
 
 export interface AuthRequest extends Request {
@@ -45,8 +45,12 @@ export const authorize = (...allowedRoles: UserRole[]) => {
     }
 
     if (!allowedRoles.includes(req.user.role)) {
-      // ✅ ROOT ADMIN OVERRIDE
-      if (allowedRoles.includes("admin") && req.user.email === "gargmishti9@gmail.com") {
+      // ROOT ADMIN OVERRIDE — configurable via ROOT_ADMIN_EMAIL env var
+      if (
+        allowedRoles.includes("admin") &&
+        env.ROOT_ADMIN_EMAIL &&
+        req.user.email === env.ROOT_ADMIN_EMAIL
+      ) {
         return next();
       }
 

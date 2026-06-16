@@ -1,6 +1,7 @@
 import axios from "axios";
+import { env } from "../../../config/env.js";
 
-const ML_SERVICE_URL = process.env.ML_SERVICE_URL || "http://localhost:8001";
+const ML_SERVICE_URL = env.ML_SERVICE_URL;
 
 export async function getPredictedWaitTime(features: {
   tokensAhead: number;

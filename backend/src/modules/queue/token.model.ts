@@ -34,7 +34,7 @@ const tokenSchema = new Schema<IToken>(
       required: true,
     },
     userId: {
-      // which queue this token belongs to
+      // which user this token belongs to
       type: Schema.Types.ObjectId,
       ref: "User",
       required: true,

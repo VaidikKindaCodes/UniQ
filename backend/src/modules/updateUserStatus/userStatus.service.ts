@@ -51,10 +51,12 @@ const hasActiveToken = async (userId: string): Promise<boolean> => {
 };
 
 // Helper: Get active token for user (source of truth)
+// NOTE: Only WAITING and SERVED are considered active. EXPIRED tokens
+// have already timed out and should not block new queue joins.
 const getActiveToken = async (userId: string) => {
   return await Token.findOne({
     userId: new Types.ObjectId(userId),
-    status: { $in: [TokenStatus.WAITING, TokenStatus.SERVED, TokenStatus.EXPIRED] },
+    status: { $in: [TokenStatus.WAITING, TokenStatus.SERVED] },
   }).sort({ createdAt: -1 });
 };
 

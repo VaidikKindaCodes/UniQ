@@ -343,7 +343,7 @@ export const createAdminUser = async (
   // Check if email already exists
   const existing = await User.findOne({ email });
   if (existing) {
-    throw new Error("Email or college email is already registered");
+    throw new Error("Email is already registered");
   }
 
   // Hash password

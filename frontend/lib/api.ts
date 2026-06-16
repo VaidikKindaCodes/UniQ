@@ -3,7 +3,7 @@ class ApiService {
   private apiBaseUrl: string;
 
   constructor() {
-    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    this.baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
     this.apiBaseUrl = `${this.baseUrl.replace(/\/+$/, "")}/api`;
   }
 

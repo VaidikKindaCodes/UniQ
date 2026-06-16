@@ -109,7 +109,7 @@ export async function createQueue(req: AuthRequest, res: Response) {
       console.warn("⚠️ Redis client not available, skipping cache sync");
     }
 
-    // 5. Success Response
+    // 4. Success Response
     return res.status(201).json({
       success: true,
       queue: {
@@ -311,6 +311,8 @@ export async function getQueuesForUsers(req: AuthRequest, res: Response) {
           status: TokenStatus.WAITING,
         });
 
+        // Simple fallback estimate (5 min/person). For ML-powered predictions,
+        // use GET /:queueId/predicted-wait instead.
         const estimatedWaitTime = waitingCount * 5;
         const isFull = queue.isFull || waitingCount >= capacity;
         const status: "open" | "paused" | "full" = !queue.isActive

@@ -157,13 +157,13 @@ class FetchQueueDataService {
       _id: queue._id,
       name: queue.name,
       location: queue.location,
-    isActive: queue.isActive,
-    nextSequence: queue.nextSequence,
-    capacity: queue.capacity,
-    isFull: queue.isFull,
-    createdAt: queue.createdAt,
-    updatedAt: queue.updatedAt,
-  };
+      isActive: queue.isActive,
+      nextSequence: queue.nextSequence,
+      capacity: queue.capacity,
+      isFull: queue.isFull,
+      createdAt: queue.createdAt,
+      updatedAt: queue.updatedAt,
+    };
 
     // Add operator details if populated and exists
     if (queue.operator) {

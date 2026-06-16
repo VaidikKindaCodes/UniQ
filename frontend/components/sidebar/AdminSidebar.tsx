@@ -72,9 +72,8 @@ export default function AdminSidebar() {
       )}
 
       <aside
-        className={`sidebar-shell fixed inset-y-0 left-0 z-40 w-72 overflow-y-auto transform transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`sidebar-shell fixed inset-y-0 left-0 z-40 w-72 overflow-y-auto transform transition-transform duration-300 ease-in-out ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+          }`}
       >
         <div className="flex h-full flex-col">
           <div className="p-8 border-b border-white/5">
@@ -104,11 +103,10 @@ export default function AdminSidebar() {
                   key={item.href}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className={`group flex items-center gap-4 rounded-2xl border px-4 py-3 transition-all duration-300 ${
-                    active
-                      ? "border-[#ffd88d]/20 bg-white/10 text-white shadow-[inset_0_0_10px_rgba(255,216,141,0.08)]"
-                      : "border-transparent text-white/62 hover:bg-white/8 hover:text-white"
-                  }`}
+                  className={`group flex items-center gap-4 rounded-2xl border px-4 py-3 transition-all duration-300 ${active
+                    ? "border-[#ffd88d]/20 bg-white/10 text-white shadow-[inset_0_0_10px_rgba(255,216,141,0.08)]"
+                    : "border-transparent text-white/62 hover:bg-white/8 hover:text-white"
+                    }`}
                 >
                   <span className={`${active ? "text-[#ffd88d]" : "text-white/44 group-hover:text-[#ffd88d]"}`}>
                     {item.icon}
@@ -138,6 +136,6 @@ export default function AdminSidebar() {
         </div>
       </aside>
     </>
-  );
-}
 
+  )
+}

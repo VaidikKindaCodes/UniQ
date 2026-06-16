@@ -14,15 +14,13 @@ const router = Router();
 router.use("/auth", authRouter);
 router.use("/queues", queueRouter);
 router.use("/operator", operatorRouter);
-router.use("/operators", operatorRouter); // alias stays
+router.use("/operators", operatorRouter); // Alias for backward compatibility (prefer /operator)
 router.use("/admin", adminRouter);
 router.use("/notifications", notificationRouter);
 router.use("/queue-data", fetchQueueDataRouter);
-// Mount to both paths for compatibility
+// Both /user and /user-status mount the same router for backward compatibility.
+// Prefer /user for new code.
 router.use("/user", verifyJWT, userStatusRouter);
-router.use("/user-status",
-  verifyJWT,
-  userStatusRouter
-);
+router.use("/user-status", verifyJWT, userStatusRouter); // Deprecated alias — prefer /user
 
 export default router;
