@@ -44,13 +44,13 @@ services:
       - backend
     restart: unless-stopped
 
-  ml:
-    build:
-      context: ./ml-service
-      dockerfile: Dockerfile
-    ports:
-      - "8001:8001"
-    restart: unless-stopped
+  # ml:
+  #   build:
+  #     context: ./ml-service
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8001:8001"
+  #   restart: unless-stopped
 
   mongo:
     image: mongo:7
