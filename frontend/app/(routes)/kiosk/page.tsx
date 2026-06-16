@@ -1,16 +1,16 @@
-"use client";
+
 
 import Link from "next/link";
 import Kiosk from "../../../components/kiosk/Kiosk";
 import { MonitorOff, ArrowLeft, Cpu } from "lucide-react";
 
 type PageProps = {
-  params: { slug: string }; 
-  searchParams?: { queueId?: string };
+  searchParams?: Promise<{ queueId?: string }> | { queueId?: string };
 };
 
-export default function KioskPage({ searchParams }: PageProps) {
-  const queueId = searchParams?.queueId;
+export default async function KioskPage({ searchParams }: PageProps) {
+  const resolvedParams = searchParams instanceof Promise ? await searchParams : (searchParams ?? {});
+  const queueId = resolvedParams?.queueId;
 
   if (!queueId) {
     return (

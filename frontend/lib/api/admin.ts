@@ -3,7 +3,7 @@
  * Handles all admin analytics API calls
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
 // Helper to get auth headers
 const getAuthHeaders = (): HeadersInit => {
@@ -48,6 +48,8 @@ export interface AvgWaitTime {
 export interface TokenStatusCount {
   status: string;
   count: number;
+  // Index signature required by recharts ChartDataInput
+  [key: string]: string | number;
 }
 
 /**

@@ -3,6 +3,7 @@ import app from "./app.js";
 
 
 import dbConnect from "./config/db.js";
+import { env } from "./config/env.js";
 import { closeRedis, initializeRedis, isRedisReady } from "./config/redis.js";
 import { startTokenExpiryJob } from "./cron/tokenExpiry.job.js";
 import { rebuildRedisStateFromMongo } from "./modules/queue/services/redisQueue.service.js";
